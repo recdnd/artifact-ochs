@@ -348,6 +348,20 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 .browser-body{height:calc(100% - 82px);overflow:auto;padding:18px;background:#fff}
 .fake-page{min-height:100%;border:1px solid #ececf2;border-radius:24px;padding:24px;background:#fff}
 .hover-card{position:fixed !important}
+/* fab hover tips + tiny x */
+.fab-wrap{position:relative}
+.fab-tip{
+  position:absolute;right:66px;top:50%;transform:translateY(-50%) translateX(8px);width:max-content;max-width:260px;
+  padding:8px 12px;border-radius:16px;font-size:11px;color:#3578ff;font-weight:600;line-height:1.4;
+  opacity:0;pointer-events:none;transition:opacity 1.3s ease,transform 1.3s cubic-bezier(.16,.8,.2,1);
+}
+.fab-wrap:hover .fab-tip{opacity:1;transform:translateY(-50%) translateX(0)}
+.tiny-x{
+  position:fixed !important;left:3px;bottom:3px;width:9px;height:9px;padding:0;border:0;background:transparent;
+  font:700 8px/9px -apple-system,BlinkMacSystemFont,sans-serif;color:#29233d;opacity:.3;cursor:pointer;z-index:2147483600;
+  overflow:visible;transition:opacity .8s ease;
+}
+.tiny-x:hover{opacity:1;transform:none;box-shadow:none}
 /* AI upsell panel */
 .ai-upsell{
   position:fixed !important;right:18px;bottom:18px;width:300px;z-index:2147480500;
@@ -707,11 +721,12 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
 </div>
 
 <div class="fab-stack">
-  <button class="omni-button fab" type="button" style="width:56px;min-height:56px;padding:0;border-radius:999px">+</button>
-  <button class="omni-button fab" type="button" style="width:56px;min-height:56px;padding:0;border-radius:999px">?</button>
-  <button class="omni-button fab" type="button" style="width:56px;min-height:56px;padding:0;border-radius:999px">*</button>
+  <div class="fab-wrap"><button class="omni-button fab" type="button" style="width:56px;min-height:56px;padding:0;border-radius:999px">+</button><div class="fab-tip glass-sludge">🪄 Agent: 我們把「取消」做得跟「繼續」一樣大, 以示公平.</div></div>
+  <div class="fab-wrap"><button class="omni-button fab" type="button" style="width:56px;min-height:56px;padding:0;border-radius:999px">?</button><div class="fab-tip glass-sludge"></div></div>
+  <div class="fab-wrap"><button class="omni-button fab" type="button" style="width:56px;min-height:56px;padding:0;border-radius:999px">*</button><div class="fab-tip glass-sludge"></div></div>
 </div>
 <button class="legend-toggle" id="legendToggle" type="button" data-mfa-skip title="ochs">☠️</button>
+<button class="tiny-x" id="tinyX" type="button" data-mfa-skip aria-label="close">x</button>
 
 <div id="mfaModal" class="modal-backdrop">
   <div class="mfa-panel">
@@ -956,7 +971,7 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
     document.body.appendChild(el);
     prepareSlowReveal(el);
     el.addEventListener('click',e=>{ if(e.target===el) spawnMega('你點了彈窗外部. 外部點擊已升級為新的沉浸式 panel.'); });
-    el.querySelector('.nest-back').addEventListener('click',()=>spawnMega('返回已被詮釋為「需要更大的上下文」.'));
+    el.querySelector('.nest-back').addEventListener('click',()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),2500); });
     el.querySelector('.nest-close').addEventListener('click',()=>growPanel(el.querySelector('.nest-close')));
     return el;
   }
@@ -985,7 +1000,7 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
     prepareSlowReveal(el);
     el.addEventListener('click',e=>{ if(e.target===el) spawnCloseAsk(); });
     el.querySelector('.nest-tip').addEventListener('click',()=>spawnCloseAsk());
-    el.querySelector('.nest-back2').addEventListener('click',()=>spawnMega('從已關閉狀態返回, 需要重新開啟沉浸式 panel.'));
+    el.querySelector('.nest-back2').addEventListener('click',()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),2500); });
     return el;
   }
   document.addEventListener('pointerdown',e=>{
@@ -1036,6 +1051,14 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
     unlockInputs(host);
     d.scrollIntoView({behavior:'smooth',block:'end'});
   }
+  /* ---- tiny x: closes the topmost layer ---- */
+  $('tinyX').addEventListener('click',e=>{
+    e.stopPropagation();
+    const open=[...document.querySelectorAll('.modal-backdrop.show')].sort((a,b)=>(+b.style.zIndex||0)-(+a.style.zIndex||0));
+    if(open.length){ const top=open[0]; top.classList.remove('show'); if(!top.id) setTimeout(()=>top.remove(),2500); return; }
+    if($('browserSheet').classList.contains('show')){ $('browserSheet').classList.remove('show'); return; }
+    const b=document.querySelector('.idle-banner.in'); if(b){ b.classList.remove('in'); setTimeout(()=>b.remove(),2700); }
+  });
   /* ---- AI upsell ---- */
   let auCredits=3, auMiniTimer=null;
   const au=$('aiUpsell');
@@ -1455,7 +1478,8 @@ function murmurAfter(el,where){
 (function sprinkle(){
   document.querySelectorAll('.panel-title,.help-title,.hero-title,.copilot-head h2').forEach(el=>murmurAfter(el));
   document.querySelectorAll('label:not(.consent-row)').forEach(el=>murmurAfter(el));
-  document.querySelectorAll('button.omni-button').forEach(el=>murmurAfter(el));
+  document.querySelectorAll('button.omni-button:not(.fab)').forEach(el=>murmurAfter(el));
+  document.querySelectorAll('.fab-tip').forEach(el=>{ if(!el.textContent.trim()) el.textContent=murmurLine(); });
   document.querySelectorAll('.chips,.mini-actions,.follow,.grid3').forEach(el=>murmurAfter(el,'append'));
   document.querySelectorAll('.chip,.nav-btn,.badge').forEach(el=>{ el.title=murmurLine(); });
   document.querySelectorAll('.mfa-panel,.modal-shell,.entity-row,.status,.empty,.copilot-stream').forEach(el=>{ murmurAfter(el,'prepend'); murmurAfter(el,'append'); });
