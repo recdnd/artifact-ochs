@@ -35,13 +35,13 @@ body{
   100%{background-position:80% 20%,60% 30%,20% 90%,0 0}
 }
 @keyframes glassBreathe{
-  0%{filter:saturate(1) brightness(1);transform:translateY(0)}
-  50%{filter:saturate(1.25) brightness(1.04);transform:translateY(-3px)}
-  100%{filter:saturate(1) brightness(1);transform:translateY(0)}
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+  100%{transform:translateY(0)}
 }
 @keyframes fadeSludge{
-  from{opacity:0;transform:translateY(18px) scale(.97);filter:blur(8px)}
-  to{opacity:1;transform:none;filter:blur(0)}
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:none}
 }
 @keyframes hueCrawl{
   from{filter:hue-rotate(0deg)}
@@ -97,7 +97,7 @@ body{
   color:#29233d;font-weight:800;font-size:15px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 10px 28px rgba(50,45,90,.14);
   cursor:pointer;
-  transition:transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,filter 1.4s ease,background 1.8s ease;
+  transition:transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,background 1.8s ease;
   animation:fadeSludge 3.4s ease both;
 }
 .omni-button:hover{
@@ -160,7 +160,6 @@ body{
   background:linear-gradient(90deg,#8b5cf6,#00c2ff,#23c483,#f9c74f,#ff4fa3,#8b5cf6);
   background-size:240% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:liquidShift 14s linear infinite;
 }
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .chip{padding:7px 12px;border-radius:999px;font-size:12px}
@@ -228,13 +227,12 @@ textarea{min-height:104px;resize:vertical}
 .modal-backdrop.show ~ .modal-backdrop.show{pointer-events:auto}
 .modal-backdrop .mfa-panel,
 .modal-backdrop .mega-modal{
-  transform:translateY(28px) scale(.96);
-  filter:blur(10px);
-  transition:transform 2.8s cubic-bezier(.16,.8,.2,1), filter 2.8s ease;
+  transform:translateY(28px);
+  transition:transform 2.8s cubic-bezier(.16,.8,.2,1);
 }
 .modal-backdrop.show .mfa-panel,
 .modal-backdrop.show .mega-modal{
-  transform:none;filter:blur(0);
+  transform:none;
 }
 .mega-modal{width:min(820px,96vw);max-height:86vh;overflow:auto;border-radius:38px;padding:30px}
 .modal-shell{border-radius:32px;padding:24px;margin-top:12px}
@@ -287,10 +285,10 @@ body.ochs-on [data-ochs]::after{
 .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.35);font-size:10px;margin-left:6px}
 /* universal silky press: every button, input, select, tile, chip */
 @keyframes silkPress{
-  0%{transform:scale(1);filter:saturate(1) brightness(1)}
-  18%{transform:scale(.955) translateY(2px);filter:saturate(1.35) brightness(1.06)}
-  46%{transform:scale(1.025) translateY(-3px);filter:saturate(1.15) brightness(1.03)}
-  100%{transform:scale(1) translateY(0);filter:saturate(1) brightness(1)}
+  0%{transform:scale(1)}
+  18%{transform:scale(.955) translateY(2px)}
+  46%{transform:scale(1.025) translateY(-3px)}
+  100%{transform:scale(1) translateY(0)}
 }
 @keyframes silkRipple{
   0%{transform:translate(-50%,-50%) scale(0);opacity:.55}
@@ -299,7 +297,7 @@ body.ochs-on [data-ochs]::after{
 @keyframes ringSpin{to{--ring-angle:360deg}}
 @property --ring-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
 button,input,select,textarea,.captcha-tile,.chip,.dock-item,.badge,.nav-btn{
-  transition:transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,filter 1.4s ease,background 1.8s ease,border-color 1.8s ease,opacity 1.2s ease;
+  transition:transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,background 1.8s ease,border-color 1.8s ease,opacity 1.2s ease;
   position:relative;overflow:hidden;
 }
 button:hover,.chip:hover,.dock-item:hover,.nav-btn:hover{transform:translateY(-2px) scale(1.012);box-shadow:0 26px 60px rgba(80,60,160,.22),0 0 0 8px rgba(139,92,246,.08)}
@@ -308,7 +306,7 @@ button:active,.captcha-tile:active{transform:scale(.97) translateY(1px);transiti
 .silk-ripple{
   position:absolute;left:var(--rx,50%);top:var(--ry,50%);width:260%;aspect-ratio:1;border-radius:999px;pointer-events:none;
   background:radial-gradient(circle,rgba(255,255,255,.9),rgba(139,92,246,.35) 40%,transparent 70%);
-  animation:silkRipple 2.6s cubic-bezier(.2,.8,.2,1) forwards;mix-blend-mode:screen;
+  animation:silkRipple 2.6s cubic-bezier(.2,.8,.2,1) forwards;
 }
 input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,92,246,.14),0 18px 48px rgba(40,40,80,.18);transform:scale(1.01)}
 /* heavier frame: spinning gradient ring + inner bevel on every glass shell */
@@ -332,6 +330,40 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 }
 .glass-sludge:hover,.panel:hover{transform:translateY(-1px)}
 .mac-notif::before{content:none}
+/* built-in browser sheet (v5 look), re-fixed after the global glass frame rule */
+.browser-sheet{
+  position:fixed !important;left:0;right:0;bottom:-92%;z-index:26000;width:min(920px,100%);margin:auto;height:82%;
+  background:#fff;border:1px solid #d7d7e2;border-radius:34px 34px 0 0;
+  box-shadow:0 -24px 80px rgba(0,0,0,.32);animation:none;
+  transition:bottom 4.2s cubic-bezier(.16,.8,.2,1);overflow:hidden;isolation:auto;
+}
+.browser-sheet::before{content:none}
+.browser-sheet.show{bottom:0}
+.browser-top{padding:14px 16px 10px;border-bottom:1px solid #e4e4ec;background:#fafaff}
+.browser-handle{background:#d6d6df}
+.browser-row{display:flex;align-items:center;gap:8px}
+#browserAddress{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid #dddde6;border-radius:999px;padding:9px 12px;background:#fff;font-size:11px;color:#666;animation:none;box-shadow:none}
+#browserAddress::before{content:none}
+#browserClose{width:auto;min-width:0;min-height:0;padding:9px 14px;border:1px solid #dddde6;border-radius:999px;background:#fff;font-weight:800;font-size:12px;animation:none;box-shadow:none}
+.browser-body{height:calc(100% - 82px);overflow:auto;padding:18px;background:#fff}
+.fake-page{min-height:100%;border:1px solid #ececf2;border-radius:24px;padding:24px;background:#fff}
+.hover-card{position:fixed !important}
+/* idle banners */
+.idle-rail{position:fixed;left:0;right:0;z-index:2147481000;display:flex;flex-direction:column;pointer-events:none}
+#idleTop{top:0}
+#idleBottom{bottom:0;flex-direction:column-reverse}
+.idle-banner{
+  pointer-events:auto;max-height:0;opacity:0;overflow:hidden;
+  display:flex;align-items:center;gap:14px;padding:0 22px;font-size:12px;color:#29233d;
+  background:rgba(250,250,255,.86);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.8);box-shadow:0 10px 30px rgba(40,40,80,.12);
+  transition:max-height 2.6s cubic-bezier(.16,.8,.2,1),opacity 2.2s ease,padding 2.6s ease;
+}
+#idleBottom .idle-banner{border-bottom:0;border-top:1px solid rgba(255,255,255,.8);box-shadow:0 -10px 30px rgba(40,40,80,.12)}
+.idle-banner.in{max-height:64px;opacity:1;padding:13px 22px}
+.idle-banner .ib-tag{font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(139,92,246,.14);white-space:nowrap}
+.idle-banner .ib-text{flex:1}
+.idle-banner .ib-close{border:0;background:transparent;color:rgba(79,70,229,.85);font-size:12px;cursor:pointer;padding:0;white-space:nowrap}
 /* outlook: prefill flash list */
 .prefill-list{
   position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:50;padding:8px;border-radius:18px;
@@ -853,10 +885,12 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
 </div></div>
 
 <div id="toastStack" class="toast-stack"></div>
+<div id="idleTop" class="idle-rail"></div>
+<div id="idleBottom" class="idle-rail"></div>
 <div id="browserSheet" class="browser-sheet glass-sludge">
   <div class="browser-top"><div class="browser-handle"></div><div class="browser-row">
     <div id="browserAddress" class="glass-sludge" style="flex:1;padding:9px 12px;font-size:11px">https://help.omninpc.ai/...</div>
-    <button id="browserClose" class="omni-button" style="width:auto;min-width:180px">Continue securely</button>
+    <button id="browserClose" class="omni-button" data-mfa-skip type="button">關閉</button>
   </div></div>
   <div id="browserBody" class="browser-body"></div>
 </div>
@@ -967,6 +1001,20 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
     unlockInputs(host);
     d.scrollIntoView({behavior:'smooth',block:'end'});
   }
+  /* ---- idle banners ---- */
+  const idleLines=['你的工作區已於背景更新. 無需操作.','提示: 此橫幅不包含任何資訊.','Agent 注意到你已數秒未操作, 已為你保留上下文.','系統正在為你準備一個更好的體驗 (無預計時間).','新功能: 橫幅. 你正在使用它.','為了提升可靠性, 我們新增了此通知.','你的 session 仍然有效. 此訊息用於確認這一點.','Cookie 偏好已被記住, 但我們忘了是哪些.','已自動儲存你尚未輸入的內容.','本橫幅由前一個橫幅觸發.','我們更新了隱私政策. 內容與之前相同.','你沒有錯過任何事. 這是一個提醒.','Agent 建議: 繼續閒置以查看更多橫幅.','此區域保留給未來的重要訊息. 目前顯示這一句.'];
+  const idleTags=['Notice','Update','Tip','Agent','System','Reminder','Beta'];
+  let lastActive=Date.now(), idleGap=5000+Math.random()*4000, idleN=0;
+  ['pointermove','pointerdown','keydown','wheel','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{lastActive=Date.now();},{passive:true,capture:true}));
+  function spawnIdleBanner(){
+    const side=(idleN++%2===0)?'idleTop':'idleBottom';
+    const rail=$(side); if(rail.children.length>=7) return;
+    const b=document.createElement('div'); b.className='idle-banner';
+    b.innerHTML='<span class="ib-tag">'+idleTags[Math.floor(Math.random()*idleTags.length)]+'</span><span class="ib-text">'+idleLines[Math.floor(Math.random()*idleLines.length)]+'</span><button type="button" class="ib-close" data-mfa-skip>(關閉)</button>';
+    b.querySelector('.ib-close').addEventListener('click',()=>{ b.classList.remove('in'); setTimeout(()=>b.remove(),2700); });
+    rail.appendChild(b); setTimeout(()=>b.classList.add('in'),40);
+  }
+  setInterval(()=>{ if(Date.now()-lastActive>idleGap){ spawnIdleBanner(); lastActive=Date.now(); idleGap=5000+Math.random()*4000; } },1000);
   function pulse(btn){
     btn.classList.remove('press-shadow');
     void btn.offsetWidth;
@@ -1289,9 +1337,10 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
   document.querySelectorAll('.omni-button.trap-link').forEach(link=>{
     link.addEventListener('secure-continue',()=>openBrowser(link.dataset.dest||'dead'));
   });
-  $('browserClose').addEventListener('secure-continue',()=>{
+  $('browserClose').addEventListener('click',()=>{
     $('browserSheet').classList.remove('show');
-    spawnMega('已離開內建瀏覽器. 離開被升級為沉浸式工作流.');
+    $('browserSheet').setAttribute('aria-hidden','true');
+    toast('已關閉內建瀏覽器','你已返回 OmniNPC 工作區.');
   });
 })();
 </script>
