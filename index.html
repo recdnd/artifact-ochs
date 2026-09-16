@@ -96,13 +96,20 @@ body{
   color:#29233d;font-weight:800;font-size:15px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 10px 28px rgba(50,45,90,.14);
   cursor:pointer;
-  transition:background 1.8s ease, box-shadow 1.8s ease, transform 1.8s ease, filter 1.8s ease;
+  transition:transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,filter 1.4s ease,background 1.8s ease;
   animation:fadeSludge 3.4s ease both;
 }
 .omni-button:hover{
-  background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(220,215,255,.65));
-  transform:scale(1.012);
+  background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(200,190,255,.72));
+  transform:translateY(-2px) scale(1.012);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 26px 60px rgba(80,60,160,.24),0 0 0 10px rgba(139,92,246,.09);
 }
+@keyframes pressShadow{
+  0%{box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 10px 28px rgba(50,45,90,.14)}
+  40%{box-shadow:0 24px 50px rgba(80,60,160,.28),0 0 0 10px rgba(139,92,246,.12)}
+  100%{box-shadow:0 48px 110px rgba(80,60,160,.55),0 0 0 22px rgba(139,92,246,.22)}
+}
+.omni-button.press-shadow{animation:pressShadow 2.4s ease forwards}
 .mfa-panel{
   width:min(620px,94vw);padding:34px;border-radius:38px;
   background:
@@ -134,7 +141,7 @@ body{
   width:52px;height:52px;padding:14px;border-radius:999px;
   display:flex;align-items:center;justify-content:center;
 }
-.nav-hit:hover{background:rgba(255,255,255,.28)}
+.nav-hit:hover{background:transparent}
 .nav-hit img{width:18px;height:18px;opacity:.35}
 .nav-btn{width:24px;height:24px;padding:0;border:0;background:transparent;cursor:pointer}
 .main{overflow:auto;padding:8px 26px 140px}
@@ -170,7 +177,8 @@ input,select,textarea{
 textarea{min-height:104px;resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.agent{color:rgba(53,120,255,.9);font-size:12px}
+.agent{color:rgba(53,120,255,.95);font-size:16px;font-weight:800;line-height:1.45}
+.npc-data{font-size:12px;color:#9ca3af;font-weight:400}
 .status{margin-top:18px;padding:16px;border-radius:32px;font-size:12px;line-height:1.6}
 .bottom-bar{
   position:fixed;left:0;right:0;bottom:0;z-index:19000;
@@ -198,7 +206,7 @@ textarea{min-height:104px;resize:vertical}
 .motive.money{background:var(--money)}
 .motive.love{background:var(--love)}
 .del-hit{padding:18px 22px;border-radius:999px;flex:1}
-.del-hit:hover{background:rgba(255,255,255,.2)}
+.del-hit:hover{background:transparent}
 .broken{width:16px;height:16px;background:rgba(255,255,255,.35);border:1px dashed rgba(255,255,255,.7);display:inline-block}
 .consent-row{margin-top:8px;display:flex;align-items:flex-start;gap:8px;font-size:11px;color:rgba(80,80,110,.75)}
 .consent-row input{width:14px;height:14px;min-height:0;padding:0;margin:0}
@@ -214,6 +222,7 @@ textarea{min-height:104px;resize:vertical}
   transition:opacity 2.4s ease, visibility 2.4s ease;
 }
 .modal-backdrop.show{opacity:1;visibility:visible;pointer-events:auto}
+.modal-backdrop.show ~ .modal-backdrop.show{pointer-events:auto}
 .modal-backdrop .mfa-panel,
 .modal-backdrop .mega-modal{
   transform:translateY(28px) scale(.96);
@@ -233,7 +242,11 @@ textarea{min-height:104px;resize:vertical}
 .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,rgba(139,92,246,.5),rgba(0,215,255,.5),rgba(236,72,153,.45));background-size:200% 100%;animation:liquidShift 8s linear infinite;transition:width 2.6s cubic-bezier(.16,.8,.2,1)}
 .progress-label{font-size:11px;margin-top:7px}
 .inline-link{display:inline;padding:0 2px;border:0;background:transparent;color:rgba(79,70,229,.85);font-size:11px;text-decoration:underline;cursor:pointer}
-.browser-sheet{position:fixed;left:0;right:0;bottom:-92%;z-index:23000;width:min(920px,100%);margin:auto;height:82%;border-radius:34px 34px 0 0;transition:bottom 4.2s cubic-bezier(.16,.8,.2,1);overflow:hidden}
+.browser-sheet{position:fixed;left:0;right:0;bottom:-92%;z-index:26000;width:min(920px,100%);margin:auto;height:82%;border-radius:34px 34px 0 0;transition:bottom 4.2s cubic-bezier(.16,.8,.2,1);overflow:hidden}
+.browser-sheet.show{bottom:0}
+.fake-ad{border:1px solid rgba(231,217,165,.8);border-radius:24px;padding:22px;background:rgba(255,248,220,.55)}
+.fake-dead{text-align:center;padding:60px 18px;color:#666}
+.fake-doc{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;color:#3f3f46}
 .browser-sheet.show{bottom:0}
 .browser-top{padding:14px 16px 10px}
 .browser-handle{width:56px;height:6px;border-radius:999px;background:rgba(255,255,255,.7);margin:0 auto 10px}
@@ -258,7 +271,111 @@ body.ochs-on [data-ochs]::after{
 .cmdk.show{animation:fadeSludge 2.4s ease both}
 .chip-soft{font-size:10px;color:rgba(100,116,139,.8);padding:4px 8px;border-radius:999px}
 .fab-stack{position:fixed;right:358px;bottom:92px;z-index:18000;display:flex;flex-direction:column;gap:8px}
+.warn-chip{display:inline-block;margin:4px 6px 0 0;padding:4px 8px;border-radius:999px;background:#fde68a;color:#92400e;font-size:10px;font-weight:800}
+.hover-card{
+  position:fixed;z-index:21050;width:min(380px,92vw);padding:18px;border-radius:28px;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(22px);
+  box-shadow:0 24px 60px rgba(40,40,80,.28);display:none;pointer-events:none;
+}
+.hover-card.show{display:block;animation:fadeSludge 1.6s ease both}
+.dock{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.dock-item{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.45);font-size:11px}
+.opt-note{font-size:11px;color:rgba(53,120,255,.9);margin-top:4px}
 .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.35);font-size:10px;margin-left:6px}
+/* universal silky press: every button, input, select, tile, chip */
+@keyframes silkPress{
+  0%{transform:scale(1);filter:saturate(1) brightness(1)}
+  18%{transform:scale(.955) translateY(2px);filter:saturate(1.35) brightness(1.06)}
+  46%{transform:scale(1.025) translateY(-3px);filter:saturate(1.15) brightness(1.03)}
+  100%{transform:scale(1) translateY(0);filter:saturate(1) brightness(1)}
+}
+@keyframes silkRipple{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:.55}
+  100%{transform:translate(-50%,-50%) scale(1);opacity:0}
+}
+@keyframes ringSpin{to{--ring-angle:360deg}}
+@property --ring-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+button,input,select,textarea,.captcha-tile,.chip,.dock-item,.badge,.nav-btn{
+  transition:transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,filter 1.4s ease,background 1.8s ease,border-color 1.8s ease,opacity 1.2s ease;
+  position:relative;overflow:hidden;
+}
+button:hover,.chip:hover,.dock-item:hover,.nav-btn:hover{transform:translateY(-2px) scale(1.012);box-shadow:0 26px 60px rgba(80,60,160,.22),0 0 0 8px rgba(139,92,246,.08)}
+button:active,.captcha-tile:active{transform:scale(.97) translateY(1px);transition-duration:.9s}
+.silk-pressing{animation:silkPress 2.2s cubic-bezier(.16,.8,.2,1) both !important}
+.silk-ripple{
+  position:absolute;left:var(--rx,50%);top:var(--ry,50%);width:260%;aspect-ratio:1;border-radius:999px;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,.9),rgba(139,92,246,.35) 40%,transparent 70%);
+  animation:silkRipple 2.6s cubic-bezier(.2,.8,.2,1) forwards;mix-blend-mode:screen;
+}
+input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,92,246,.14),0 18px 48px rgba(40,40,80,.18);transform:scale(1.01)}
+/* heavier frame: spinning gradient ring + inner bevel on every glass shell */
+.glass-sludge,.mfa-panel,.mega-modal,.panel,.toast{
+  position:relative;isolation:isolate;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.95),
+    inset 0 -10px 24px rgba(180,190,230,.16),
+    inset 0 0 0 1px rgba(255,255,255,.55),
+    0 0 0 1px rgba(120,110,200,.12),
+    0 0 0 6px rgba(255,255,255,.22),
+    0 0 0 7px rgba(140,130,220,.10),
+    0 18px 48px rgba(40,40,80,.16),
+    0 40px 90px rgba(60,50,140,.10);
+}
+.glass-sludge::before,.mfa-panel::before,.mega-modal::before{
+  content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;z-index:-1;pointer-events:none;
+  background:conic-gradient(from var(--ring-angle),rgba(255,255,255,.0),rgba(139,92,246,.35),rgba(34,211,238,.35),rgba(236,72,153,.3),rgba(255,255,255,.0));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  animation:ringSpin 14s linear infinite;opacity:.8;
+}
+.glass-sludge:hover,.panel:hover{transform:translateY(-1px)}
+.mac-notif::before{content:none}
+/* macOS Messages banner */
+.mac-notif{
+  position:fixed;top:14px;right:-420px;width:360px;z-index:2147483000;
+  display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:start;
+  padding:10px 14px 12px 10px;border-radius:18px;
+  background:rgba(246,246,248,.72);
+  backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);
+  box-shadow:0 8px 30px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+  color:#1d1d1f;cursor:default;user-select:none;
+  transition:right .55s cubic-bezier(.2,.9,.3,1.1),opacity .4s ease;
+}
+.mac-notif.in{right:14px}
+.mac-notif.out{opacity:0;right:-420px;transition:right .35s ease,opacity .25s ease}
+.mac-notif .app-icon{
+  width:38px;height:38px;border-radius:9px;margin-top:2px;
+  background:linear-gradient(180deg,#5af576,#13c33e);
+  display:grid;place-items:center;box-shadow:inset 0 -1px 0 rgba(0,0,0,.12);
+}
+.mac-notif .app-icon svg{width:24px;height:24px;fill:#fff}
+.mac-notif .n-head{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:rgba(60,60,67,.6);margin-bottom:1px}
+.mac-notif .n-title{font-size:13px;font-weight:600;line-height:1.2}
+.mac-notif .n-body{font-size:13px;line-height:1.3;margin-top:1px;color:#1d1d1f}
+.mac-notif .n-body b{font-weight:600;letter-spacing:.02em}
+.mfa-resend{font-size:11px;color:rgba(53,120,255,.9);margin-top:-14px;margin-bottom:12px;cursor:pointer;display:inline-block}
+.mfa-resend:hover{text-decoration:underline}
+/* captcha */
+.captcha-head{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:24px;margin-bottom:12px}
+.captcha-head .cap-target{font-size:20px;font-weight:900;letter-spacing:.02em}
+.captcha-head small{display:block;font-size:11px;opacity:.7}
+.captcha-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 auto 14px;max-width:330px}
+#captchaModal .mfa-panel{max-height:94vh;overflow:auto;padding:24px 28px}
+#captchaModal .captcha-head{padding:10px 14px}
+#captchaModal .cap-target{font-size:18px}
+.captcha-tile{
+  position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;cursor:pointer;
+  background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8);
+  transition:transform 1.2s ease,box-shadow 1.2s ease;
+}
+.captcha-tile canvas{width:100%;height:100%;display:block;filter:blur(1.4px) contrast(.5) saturate(.35) brightness(1.08)}
+.captcha-tile:hover{transform:scale(.985)}
+.captcha-tile.sel{box-shadow:0 0 0 4px rgba(139,92,246,.55) inset;transform:scale(.9)}
+.captcha-tile.sel::after{content:"✓";position:absolute;left:6px;top:4px;width:22px;height:22px;border-radius:999px;background:#7c3aed;color:#fff;font-size:13px;display:grid;place-items:center}
+.captcha-foot{display:flex;justify-content:space-between;align-items:center;font-size:11px;opacity:.7;margin-bottom:10px}
+.captcha-foot span[data-act]{cursor:pointer;text-decoration:underline}
+.captcha-verifying{position:absolute;inset:0;border-radius:38px;display:none;place-items:center;background:rgba(245,245,255,.72);backdrop-filter:blur(12px);font-weight:900;letter-spacing:.2em;font-size:12px}
+.captcha-verifying.show{display:grid}
 @media(max-width:960px){
   .shell{grid-template-columns:56px 1fr}
   .copilot,.fab-stack{display:none}
@@ -301,64 +418,89 @@ body.ochs-on [data-ochs]::after{
           </div>
           <div class="hero-title" data-ochs="6 8">OmniNPC Copilot HyperStudio</div>
           <div class="subcopy">Turn a single character intent into a governed, workspace-ready entity graph.</div>
-          <div class="microcopy">HyperStudio infers structured fields from natural language so your team can ship narrative systems faster.</div>
+          <div class="microcopy">HyperStudio infers structured fields from natural language so your team can ship narrative systems faster. 相關資源:
+            <button class="inline-link trap-link" data-dest="dead" type="button">模型說明</button> /
+            <button class="inline-link trap-link" data-dest="ad" type="button">隱私中心</button> /
+            <button class="inline-link trap-link" data-dest="docs" type="button">技術文件</button> /
+            <button class="inline-link trap-link" data-dest="dead" type="button">工作流最佳實踐</button>
+          </div>
           <div class="usage">Workspace Personal · 1 seat · 73% Free tokens</div>
         </div>
 
         <div class="panel glass-sludge" data-ochs="7">
           <div class="panel-title">Create NPC</div>
-          <div class="agent">Copilot inferred 12 fields from your latest intent and mapped them to the entity schema.</div>
+          <div class="agent">🪄 Agent 認為這個角色具有高敘事張力, 並已預先推斷 17 個欄位. 見
+            <button class="inline-link trap-link" data-dest="docs" type="button">推斷規範</button> 與
+            <button class="inline-link trap-link" data-dest="dead" type="button">欄位本體論</button>.
+          </div>
           <label>Intent</label>
-          <textarea class="trap-field" id="intentBox">幫我建立一個神父: 這個 NPC 為錢說話. 實力很強.</textarea>
+          <textarea class="trap-field npc-data" id="intentBox">幫我建立一個神父: 這個 NPC 為錢說話. 實力很強.</textarea>
           <div class="grid2">
-            <div><label>Display name</label><input class="trap-field" id="nameField" value="神父"></div>
+            <div>
+              <label>Display name</label>
+              <input class="trap-field npc-data" id="nameField" value="神父">
+              <div class="opt-note" id="nameOpt">🪄 已替你優化表達</div>
+            </div>
             <div>
               <label>Motive</label>
-              <select class="trap-field" id="motiveField">
+              <select class="trap-field npc-data" id="motiveField">
                 <option selected value="money">Capital-aligned</option>
                 <option value="love">Attachment-aligned</option>
               </select>
             </div>
             <div>
-              <label>Capability</label>
-              <select class="trap-field" id="strField">
-                <option value="weak">Foundational</option>
-                <option value="mid">Established</option>
-                <option selected value="strong">Advanced</option>
+              <label>實力強度</label>
+              <select class="trap-field npc-data" id="strField">
+                <option value="weak">弱</option>
+                <option value="mid">中</option>
+                <option selected value="strong">強</option>
+                <option value="ctx">脈絡依賴</option>
+                <option value="agent">由 Agent 動態決定</option>
+                <option value="undef">暫不定義</option>
               </select>
             </div>
             <div>
               <label>Aura token</label>
-              <select class="trap-field">
+              <select class="trap-field npc-data">
                 <option selected>System violet #9D4EDD</option>
                 <option>Auto cyan #00FFEA</option>
                 <option>Alert pink #FF3FA4</option>
               </select>
             </div>
-            <div><label>Trust index</label><input class="trap-field" type="range" min="0" max="100" value="72"></div>
-            <div><label>Narrative levy</label><input class="trap-field" type="number" value="18"></div>
+            <div><label>Trust index</label><input class="trap-field" type="range" min="0" max="100" value="72"><span class="warn-chip">⚠ 尚未完成</span></div>
+            <div><label>Narrative levy</label><input class="trap-field npc-data empty-watch" id="levyField" type="number" value="" placeholder=""><span class="warn-chip empty-flag">⚠ 尚未完成</span></div>
           </div>
-          <div class="panel glass-sludge">
+          <label class="consent-row"><input id="merchantCheck" type="checkbox"><span class="npc-data">商人</span></label>
+          <div id="extraFields" class="grid2" style="margin-top:8px">
+            <div><label>Origin</label><input class="npc-data empty-watch" placeholder=""><span class="warn-chip empty-flag">⚠ 尚未完成</span></div>
+            <div><label>Backstory</label><input class="npc-data empty-watch" placeholder=""><span class="warn-chip empty-flag">⚠ 尚未完成</span></div>
+            <div><label>Voice</label><input class="npc-data empty-watch" placeholder=""><span class="warn-chip empty-flag">⚠ 尚未完成</span></div>
+            <div><label>Alignment</label><input class="npc-data empty-watch" placeholder=""><span class="warn-chip empty-flag">⚠ 尚未完成</span></div>
+            <div><label>Diet</label><input class="npc-data empty-watch" placeholder=""><span class="warn-chip empty-flag">⚠ 尚未完成</span></div>
+            <div><label>Secret tax</label><input class="npc-data empty-watch" placeholder=""><span class="warn-chip empty-flag">⚠ 尚未完成</span></div>
+          </div>
+          <div class="panel glass-sludge" id="suggestPanel">
             <div class="help-title">Copilot suggestion <span class="badge">typed</span></div>
-            <div class="agent">Capability looked structured, so HyperStudio added a strength enum, trust index, narrative levy, and aura token.</div>
+            <div class="agent">Capability looked structured, so HyperStudio added a strength enum, trust index, narrative levy, and aura token.
+              <button class="inline-link trap-link" data-dest="docs" type="button">schema</button> /
+              <button class="inline-link trap-link" data-dest="ad" type="button">合作夥伴</button>
+            </div>
           </div>
-          <button id="generate" class="omni-button" data-ochs="1 3" style="margin-top:12px">Save and continue</button>
-          <label class="consent-row"><input id="consentCheck" type="checkbox"><span>I agree that Copilot may expand fields, create workflows, and share semantic context across this workspace.</span></label>
-          <label class="consent-row"><input type="checkbox"><span>Allow product analytics and model-quality review on entity text.</span></label>
-          <label class="consent-row"><input type="checkbox"><span>Keep my workspace discoverable to recommended partners.</span></label>
+          <button id="generate" class="omni-button" data-ochs="1 3" data-need-check="consentCheck" style="margin-top:12px">Save and continue</button>
+          <label class="consent-row"><input id="consentCheck" type="checkbox"><span>我已閱讀並理解 AI 可能會擅自擴張欄位與工作流 (
+            <button class="inline-link trap-link" data-dest="docs" type="button">條款</button> /
+            <button class="inline-link trap-link" data-dest="ad" type="button">隱私</button>
+          )</span></label>
           <div id="fakeProgress" class="progress-wrap" style="display:none">
             <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
             <div id="progressLabel" class="progress-label">Preparing semantic pipeline...</div>
           </div>
           <div class="mini-actions">
-            <button class="omni-button" id="undoBtn" type="button">Continue securely</button>
-            <button class="omni-button" id="quietBtn" type="button">Apply and continue</button>
+            <button class="omni-button" id="undoBtn" type="button" data-need-check="undoGate">Continue securely</button>
+            <label class="consent-row"><input id="undoGate" type="checkbox"><span>允許 Agent 學習此次 Undo</span></label>
+            <button class="omni-button" id="quietBtn" type="button">減少干擾</button>
             <button class="omni-button" id="cmdkBtn" type="button">Verify and continue</button>
             <button class="omni-button" id="shareBtn" type="button">Save and continue</button>
-            <button class="omni-button" type="button">Continue securely</button>
-            <button class="omni-button" type="button">Apply and continue</button>
-            <button class="omni-button" type="button">Verify and continue</button>
-            <button class="omni-button" type="button">Save and continue</button>
           </div>
         </div>
 
@@ -366,7 +508,7 @@ body.ochs-on [data-ochs]::after{
           <div class="panel-title">Live entity</div>
           <div class="entity-row glass-sludge" id="entityRow">
             <div>
-              <div class="entity-name" id="entityName">神父</div>
+              <div class="entity-name npc-data" id="entityName">神父</div>
               <div style="margin-top:6px">
                 <span id="strView" class="str-strong">實力</span>
                 <span id="motiveView" class="motive money"></span>
@@ -381,13 +523,18 @@ body.ochs-on [data-ochs]::after{
               </button>
             </div>
           </div>
-          <p class="microcopy">Status, motive, and capability are encoded in the entity presentation layer.</p>
+          <div class="microcopy">Status, motive, and capability are encoded in the entity presentation layer.
+            <button class="inline-link trap-link" data-dest="dead" type="button">呈現層說明</button>
+          </div>
         </div>
 
         <div class="empty glass-sludge" data-ochs="5">
           <div class="blob"></div>
           <div class="help-title">Let's get started</div>
-          <div class="microcopy">Invite teammates to co-author this workspace.</div>
+          <div class="microcopy">Invite teammates to co-author this workspace.
+            <button class="inline-link trap-link" data-dest="ad" type="button">席位方案</button> /
+            <button class="inline-link trap-link" data-dest="dead" type="button">邀請政策</button>
+          </div>
           <button class="omni-button" type="button" id="emptyCta" style="margin-top:14px">Continue securely</button>
         </div>
 
@@ -397,6 +544,8 @@ body.ochs-on [data-ochs]::after{
             17 residents · pulled 0 · 1 = same scale as the protagonist<br>
             師匠 1.68 unpulled / 小精靈 1 unpulled / 教導主任 2 unpulled<br>
             Compare by eye with the translucent sus. Do not convert to cm.
+            <button class="inline-link trap-link" data-dest="docs" type="button">尺的怪處</button> /
+            <button class="inline-link trap-link" data-dest="dead" type="button">FAQ</button>
           </div>
           <button class="omni-button trap-link" data-dest="docs" type="button" style="margin-top:12px">Verify and continue</button>
         </div>
@@ -409,6 +558,14 @@ body.ochs-on [data-ochs]::after{
             <div class="chip">Vector aura OK</div>
           </div>
           <div class="agent" style="margin-top:10px">Ambient control is active. No configuration is required.</div>
+          <div class="npc-data" style="margin-top:10px;line-height:1.8">相關資源:
+            <button class="inline-link trap-link" data-dest="dead" type="button">模型說明</button> /
+            <button class="inline-link trap-link" data-dest="ad" type="button">隱私中心</button> /
+            <button class="inline-link trap-link" data-dest="docs" type="button">技術文件</button> /
+            <button class="inline-link trap-link" data-dest="dead" type="button">工作流最佳實踐</button> /
+            <button class="inline-link trap-link" data-dest="ad" type="button">合作夥伴</button> /
+            <button class="inline-link trap-link" data-dest="dead" type="button">FAQ</button>
+          </div>
           <button class="omni-button trap-link" data-dest="dead" type="button" style="margin-top:12px">Apply and continue</button>
         </div>
 
@@ -418,6 +575,13 @@ body.ochs-on [data-ochs]::after{
           <span style="font-size:11px">:2828 · in (icons over http)</span><br>
           <span style="font-size:12px">:7676 b-rec · in</span><br>
           <span style="font-size:10px">Canonical play surface. Dashboard is read-only: look, measure, verify; nothing is writable.</span>
+          <div class="npc-data" style="margin-top:8px">
+            有更新的版本在做同一件事
+            <button class="inline-link trap-link" data-dest="dead" type="button">版本差異</button>
+            ; 只留著查
+            <button class="inline-link trap-link" data-dest="ad" type="button">最佳實踐</button>
+            , 不要改.
+          </div>
         </div>
       </div>
     </div>
@@ -426,7 +590,10 @@ body.ochs-on [data-ochs]::after{
   <aside class="copilot glass-sludge" data-ochs="5 7 8">
     <div class="copilot-head">
       <h2>Copilot</h2>
-      <div class="microcopy">Grounded in the current entity.</div>
+      <div class="microcopy">Grounded in the current entity.
+        <button class="inline-link trap-link" data-dest="docs" type="button">grounding 說明</button> /
+        <button class="inline-link trap-link" data-dest="dead" type="button">Agent 政策</button>
+      </div>
     </div>
     <div class="copilot-stream">
       <div class="bubble user" id="copilotEcho">幫我建立一個神父: 這個 NPC 為錢說話. 實力很強.</div>
@@ -441,7 +608,10 @@ body.ochs-on [data-ochs]::after{
 </div>
 
 <div class="bottom-bar glass-sludge" data-ochs="9">
-  HyperStudio · Agent 4 · Workspace Ready · v0.9.7-pre · local 2828 · autosave on · model healthy · 3 agents observing · Semantic integrity 98% · No action required
+  Context warm / Memory synced / Semantic integrity 98% / 3 agents observing / No action required
+  · <button class="inline-link trap-link" data-dest="dead" type="button">狀態定義</button>
+  · <button class="inline-link trap-link" data-dest="docs" type="button">觀測日誌</button>
+  <div class="dock" id="dock"></div>
 </div>
 
 <div class="fab-stack">
@@ -467,9 +637,23 @@ body.ochs-on [data-ochs]::after{
       <input maxlength="1" inputmode="numeric">
       <input maxlength="1" inputmode="numeric">
     </div>
+    <span class="mfa-resend" id="mfaResend">Didn't receive a code? Resend</span>
     <button class="omni-button" id="verifyMfa" data-mfa-skip>Verify and continue securely</button>
     <button class="omni-button" id="mfaOther" data-mfa-skip style="margin-top:8px">Use another verification method</button>
     <button class="omni-button" id="mfaCancel" data-mfa-skip style="margin-top:8px">Cancel and return securely</button>
+  </div>
+</div>
+
+<div id="captchaModal" class="modal-backdrop">
+  <div class="mfa-panel" style="position:relative">
+    <div class="glass-sludge" style="padding:16px 18px;margin-bottom:14px">Human verification <span class="badge" id="capStep">1 / 2</span></div>
+    <div class="glass-sludge captcha-head">
+      <div><small>Select all squares with</small><div class="cap-target" id="capTarget"></div><small>If there are none, click verify.</small></div>
+    </div>
+    <div class="captcha-grid" id="capGrid"></div>
+    <div class="captcha-foot"><span id="capHint">Images are protected against automated access.</span><span data-act="reload" id="capReload">↻ new challenge</span></div>
+    <button class="omni-button" id="capVerify" data-mfa-skip>Verify</button>
+    <div class="captcha-verifying" id="capVerifying">VERIFYING</div>
   </div>
 </div>
 
@@ -495,7 +679,10 @@ body.ochs-on [data-ochs]::after{
     <div class="modal-shell glass-sludge">
       <div class="chips"><span class="chip">Deep Agent Mode <span class="badge">live</span></span><span class="chip">Semantic Layer</span></div>
       <div class="hero-title">Immersive NPC control center</div>
-      <p>This field is connected to a multi-step workspace, so HyperStudio opened the full editor.</p>
+      <p>This field is connected to a multi-step workspace, so HyperStudio opened the full editor.
+        <button class="inline-link trap-link" data-dest="docs" type="button">工作流文件</button> /
+        <button class="inline-link trap-link" data-dest="dead" type="button">中斷影響</button>
+      </p>
       <div class="modal-subpanel glass-sludge">
         <div class="panel-title">Agent Insight Stream</div>
         <div class="grid2">
@@ -503,44 +690,92 @@ body.ochs-on [data-ochs]::after{
           <div><label>Semantic weight</label><input type="range" value="83"></div>
         </div>
       </div>
-      <button id="inlineClose" class="omni-button" type="button" style="margin-top:16px">Continue securely</button>
+      <p class="npc-data">這裡沒有右上角關閉. 關閉操作藏在內文最下面.</p>
+      <p class="npc-data">若你想回到原本只是想輸入一個名字的畫面, 請在本段文字下面尋找「關閉」按鈕.</p>
+      <button id="inlineClose" class="omni-button" type="button" data-mfa-skip style="margin-top:16px">關閉</button>
     </div>
   </div>
 </div>
 
 <div id="confirmBackdrop" class="modal-backdrop"><div class="mfa-panel">
-  <div class="glass-sludge" style="padding:14px 18px">Close the control center?</div>
-  <p>Closing may affect semantic integrity and agent immersion.</p>
-  <button id="cancelClose" class="omni-button" type="button">Cancel and return securely</button>
-  <button id="confirmClose" class="omni-button" type="button" style="margin-top:8px">Verify and continue</button>
+  <div class="glass-sludge" style="padding:14px 18px">確認要關閉嗎?</div>
+  <p>關閉後, 沉浸式 NPC 智慧控制中心將被關閉, 並可能影響你的語義完整性與代理沉浸感.
+    <button class="inline-link trap-link" data-dest="dead" type="button">語義完整性</button> /
+    <button class="inline-link trap-link" data-dest="docs" type="button">關閉政策</button>
+  </p>
+  <div class="agent">真的要關閉嗎? 系統建議你再想一下.</div>
+  <button id="cancelClose" class="omni-button" type="button" data-mfa-skip>不要關閉</button>
+  <button id="confirmClose" class="omni-button" type="button" data-mfa-skip style="margin-top:8px">確認關閉</button>
 </div></div>
 
 <div id="finalBackdrop" class="modal-backdrop"><div class="mfa-panel">
-  <div class="glass-sludge" style="padding:14px 18px">Closed</div>
-  <p>The immersive control center is now closed.</p>
-  <button id="finalClose" class="omni-button" type="button">Continue</button>
+  <div class="glass-sludge" style="padding:14px 18px">已關閉</div>
+  <p>沉浸式控制中心已成功關閉.</p>
+  <div class="agent">🪄 Agent: 你現在可以關閉這個「已關閉」提示.</div>
+  <p class="npc-data">確認要關閉... 關閉... 嗎?</p>
+  <button id="finalClose" class="omni-button" type="button" data-mfa-skip>關閉提示</button>
 </div></div>
 
 <div id="mustCheckBackdrop" class="modal-backdrop"><div class="mfa-panel">
-  <div class="glass-sludge" style="padding:14px 18px">Complete required confirmations</div>
-  <p>Your click was received. Please tick the consent boxes, then continue again.</p>
+  <div class="glass-sludge" style="padding:14px 18px">你必須勾選才能點擊按鈕</div>
+  <p>你剛才已經成功點擊了按鈕. 請先勾選按鈕下方的小勾選框, 再點一次.</p>
   <button id="mustCheckClose" class="omni-button" type="button">Continue</button>
 </div></div>
 
 <div id="undoBackdrop" class="modal-backdrop"><div class="mfa-panel">
-  <div class="glass-sludge" style="padding:14px 18px">Why undo?</div>
-  <label>Reason</label>
-  <select id="undoReason"><option value="">Select</option><option>Result not ideal</option><option>Intent changed</option><option value="other">Other</option></select>
-  <div id="undoOtherWrap" style="display:none;margin-top:10px"><textarea id="undoOther" rows="3"></textarea></div>
+  <div class="glass-sludge" style="padding:14px 18px">為了改善 Agent 品質, 請選擇撤銷原因</div>
+  <select id="undoReason"><option value="">請選擇</option><option>結果不理想</option><option>意圖改變</option><option value="other">其他</option></select>
+  <div id="undoOtherWrap" style="display:none;margin-top:10px"><label>請至少輸入 20 字</label><textarea id="undoOther" rows="3"></textarea></div>
   <button id="undoCancel" class="omni-button" type="button" style="margin-top:12px">Cancel and return securely</button>
   <button id="undoConfirm" class="omni-button" type="button" style="margin-top:8px">Apply and continue</button>
 </div></div>
 
 <div id="quietBackdrop" class="modal-backdrop"><div class="mfa-panel">
-  <div class="glass-sludge" style="padding:14px 18px">Reduce noise</div>
-  <label>Noise intensity</label><input type="range" min="0" max="100" value="72">
-  <button id="quietClose" class="omni-button" type="button" style="margin-top:12px">Apply and continue</button>
+  <div class="agent">🪄 Agent: 我們注意到彈窗可能打斷您的工作流. 是否啟用「減少干擾」?</div>
+  <div class="glass-sludge" style="padding:14px 18px;margin:12px 0">減少干擾設定</div>
+  <label>干擾強度</label><input type="range" min="0" max="100" value="72">
+  <label>是否顯示「已減少干擾」提示</label><select><option>顯示</option><option>強烈顯示</option></select>
+  <button id="quietClose" class="omni-button" type="button" style="margin-top:12px">啟用</button>
 </div></div>
+
+<div id="intentBackdrop" class="modal-backdrop"><div class="mfa-panel">
+  <div class="agent">你是想修改名稱、重新定義身份, 還是建立新的語義實體?</div>
+  <button class="omni-button intent-pick" type="button" data-mfa-skip>修改名稱</button>
+  <button class="omni-button intent-pick" type="button" data-mfa-skip style="margin-top:8px">重新定義身份</button>
+  <button class="omni-button intent-pick" type="button" data-mfa-skip style="margin-top:8px">建立新的語義實體</button>
+</div></div>
+
+<div id="enhanceBackdrop" class="modal-backdrop"><div class="mfa-panel">
+  <div class="agent">已自動補全 14 個欄位. 頁面資訊似乎較多, 是否啟用 AI 精簡模式?</div>
+  <p class="npc-data" id="enhanceList"></p>
+  <button id="enhanceSave" class="omni-button" type="button" data-mfa-skip>保存已增強的實體</button>
+  <button id="compactAsk" class="omni-button" type="button" data-mfa-skip style="margin-top:8px">啟用精簡</button>
+</div></div>
+
+<div id="compactBackdrop" class="modal-backdrop"><div class="mega-modal glass-sludge">
+  <div class="agent">精簡模式需要一個更大的工作流, 才能安全地隱藏剛才新增的 14 個欄位.</div>
+  <div class="modal-subpanel glass-sludge">Context density / Field compression / Narrative levy / Aura token / Trust index / Semantic weight</div>
+  <button id="compactClose" class="omni-button" type="button" data-mfa-skip style="margin-top:12px">Apply and continue</button>
+</div></div>
+
+<div id="merchantBackdrop" class="modal-backdrop"><div class="mfa-panel">
+  <div class="glass-sludge" style="padding:14px 18px" id="merchantStepTitle">商業人格</div>
+  <p class="npc-data" id="merchantStepBody">Step 1 / 3</p>
+  <button id="merchantNext" class="omni-button" type="button" data-mfa-skip>Continue securely</button>
+</div></div>
+
+<div id="delNameBackdrop" class="modal-backdrop"><div class="mfa-panel">
+  <div class="glass-sludge" style="padding:14px 18px">請輸入 NPC 名稱以確認刪除</div>
+  <input id="delNameInput" class="npc-data" placeholder="神父">
+  <p>你確定這不是暫時性的決定嗎?</p>
+  <button id="delNameCancel" class="omni-button" type="button" style="margin-top:12px">Cancel and return securely</button>
+  <button id="delNameNext" class="omni-button" type="button" style="margin-top:8px">理解影響並繼續</button>
+</div></div>
+
+<div id="hoverCard" class="hover-card glass-sludge">
+  <div class="agent">🪄 Agent 即時解讀</div>
+  <div class="npc-data" style="margin-top:8px">你目前正接近一個欄位. 系統已推斷你可能想修改、重定義或重新建模這個實體.</div>
+</div>
 
 <div id="archiveBackdrop" class="modal-backdrop"><div class="mfa-panel">
   <div class="glass-sludge" style="padding:14px 18px">Archive to collection</div>
@@ -586,35 +821,119 @@ body.ochs-on [data-ochs]::after{
 <script>
 (function(){
   const $ = id => document.getElementById(id);
+  const SUF='(高信任敘事角色)';
   function prepareSlowReveal(el){
-    const nodes=[...el.querySelectorAll('h2,p,label,button,.glass-sludge,.agent,.panel-title,.hero-title,.chip,.badge,.fake-tooltip,strong')];
+    const nodes=[...el.querySelectorAll('h2,p,label,button,.glass-sludge,.agent,.panel-title,.hero-title,.chip,.badge,strong')];
     nodes.forEach((node,idx)=>{
       node.classList.add('slow-reveal-item');
       node.classList.remove('revealed');
       setTimeout(()=>node.classList.add('revealed'), 900 + idx*520);
     });
   }
-  const show = el => { el.classList.add('show'); prepareSlowReveal(el); };
+  const show = el => { zStack += 2; el.style.zIndex = String(zStack); el.classList.add('show'); prepareSlowReveal(el); };
   const hide = el => el.classList.remove('show');
+  let zStack = 22000;
+  let nestN = 0;
+  function spawnMega(copy){
+    nestN++;
+    const el=document.createElement('div');
+    el.className='modal-backdrop show';
+    zStack += 2;
+    el.style.zIndex=String(zStack);
+    el.innerHTML='<div class="mega-modal glass-sludge" style="margin:'+(nestN%6)*14+'px auto 0"><div class="modal-shell glass-sludge"><div class="hero-title">Immersive NPC control center</div><p class="agent">'+(copy||'系統偵測到你正在離開一個 panel, 因此開啟了下一個完整工作流.')+'</p><p class="npc-data">相關資源: <button type="button" class="inline-link trap-link" data-dest="dead">模型說明</button> / <button type="button" class="inline-link trap-link" data-dest="ad">隱私中心</button> / <button type="button" class="inline-link trap-link" data-dest="docs">技術文件</button> / <button type="button" class="inline-link trap-link" data-dest="dead">FAQ</button></p><p class="npc-data">這裡沒有右上角關閉. 關閉操作藏在內文最下面.</p><p class="npc-data">若你想回去, 請在本段文字下面尋找「關閉」或「返回」.</p><button type="button" class="omni-button nest-back" data-mfa-skip>返回上一層</button><button type="button" class="omni-button nest-close" data-mfa-skip style="margin-top:8px">關閉</button></div></div>';
+    document.body.appendChild(el);
+    prepareSlowReveal(el);
+    el.addEventListener('click',e=>{ if(e.target===el) spawnMega('你點了彈窗外部. 外部點擊已升級為新的沉浸式 panel.'); });
+    el.querySelector('.nest-back').addEventListener('click',()=>spawnMega('返回已被詮釋為「需要更大的上下文」.'));
+    el.querySelector('.nest-close').addEventListener('click',()=>spawnCloseAsk());
+    return el;
+  }
+  function spawnCloseAsk(){
+    nestN++;
+    const el=document.createElement('div');
+    el.className='modal-backdrop show';
+    zStack += 2;
+    el.style.zIndex=String(zStack);
+    el.innerHTML='<div class="mfa-panel" style="margin:'+(nestN%6)*12+'px auto 0"><div class="glass-sludge" style="padding:14px 18px">確認要關閉嗎?</div><p>關閉後, 沉浸式 NPC 智慧控制中心將被關閉, 並可能影響你的語義完整性與代理沉浸感. <button type="button" class="inline-link trap-link" data-dest="dead">語義完整性</button> / <button type="button" class="inline-link trap-link" data-dest="docs">關閉政策</button></p><div class="agent">真的要關閉嗎? 系統建議你再想一下.</div><button type="button" class="omni-button nest-no" data-mfa-skip>不要關閉</button><button type="button" class="omni-button nest-yes" data-mfa-skip style="margin-top:8px">確認關閉</button></div>';
+    document.body.appendChild(el);
+    prepareSlowReveal(el);
+    el.addEventListener('click',e=>{ if(e.target===el) spawnMega('確認層外部點擊已建立新工作流.'); });
+    el.querySelector('.nest-no').addEventListener('click',()=>spawnMega('你選擇不要關閉. 因此開啟完整控制中心.'));
+    el.querySelector('.nest-yes').addEventListener('click',()=>spawnClosed());
+    return el;
+  }
+  function spawnClosed(){
+    nestN++;
+    const el=document.createElement('div');
+    el.className='modal-backdrop show';
+    zStack += 2;
+    el.style.zIndex=String(zStack);
+    el.innerHTML='<div class="mfa-panel" style="margin:'+(nestN%6)*12+'px auto 0"><div class="glass-sludge" style="padding:14px 18px">已關閉</div><p>沉浸式控制中心已成功關閉. <button type="button" class="inline-link trap-link" data-dest="ad">事後摘要</button></p><div class="agent">🪄 Agent: 你現在可以關閉這個「已關閉」提示.</div><p class="npc-data">確認要關閉... 關閉... 嗎?</p><button type="button" class="omni-button nest-tip" data-mfa-skip>關閉提示</button><button type="button" class="omni-button nest-back2" data-mfa-skip style="margin-top:8px">返回</button></div>';
+    document.body.appendChild(el);
+    prepareSlowReveal(el);
+    el.addEventListener('click',e=>{ if(e.target===el) spawnCloseAsk(); });
+    el.querySelector('.nest-tip').addEventListener('click',()=>spawnCloseAsk());
+    el.querySelector('.nest-back2').addEventListener('click',()=>spawnMega('從已關閉狀態返回, 需要重新開啟沉浸式 panel.'));
+    return el;
+  }
+  document.addEventListener('pointerdown',e=>{
+    const t=e.target.closest('button,.captcha-tile,.chip,.dock-item,select,.nav-btn,label.consent-row');
+    if(!t) return;
+    t.classList.remove('silk-pressing'); void t.offsetWidth; t.classList.add('silk-pressing');
+    const r=t.getBoundingClientRect();
+    const rip=document.createElement('span'); rip.className='silk-ripple';
+    rip.style.setProperty('--rx',((e.clientX-r.left)/r.width*100)+'%');
+    rip.style.setProperty('--ry',((e.clientY-r.top)/r.height*100)+'%');
+    t.appendChild(rip); setTimeout(()=>rip.remove(),2700);
+  },true);
+  function pulse(btn){
+    btn.classList.remove('press-shadow');
+    void btn.offsetWidth;
+    btn.classList.add('press-shadow');
+  }
   function toast(title,text,delay=0){
     setTimeout(()=>{
       const el=document.createElement('div');
       el.className='toast glass-sludge';
-      el.innerHTML='<strong>'+title+'</strong>'+text;
+      el.innerHTML='<strong>'+title+'</strong>'+text+'<div style="text-align:right;margin-top:8px"><button type="button" data-mfa-skip style="border:0;background:transparent;cursor:pointer">x</button></div>';
+      el.querySelector('button').addEventListener('click',()=>el.remove());
       $('toastStack').appendChild(el);
     },delay);
   }
-
-  let pending = null;
+  function fourToasts(){
+    toast('已保存','NPC 已保存.',0);
+    toast('同步成功','工作區已同步.',700);
+    toast('Agent 已知悉','Agent 已接收你的修改.',1400);
+    toast('工作區狀態已更新','No action required.',2100);
+  }
+  let pending=null;
+  let nameUnlocked=false;
   const mfaInputs=[...document.querySelectorAll('.mfa-code input')];
   function clearMfa(){ mfaInputs.forEach(i=>i.value=''); if(mfaInputs[0]) mfaInputs[0].focus(); }
   function mfaValue(){ return mfaInputs.map(i=>i.value).join(''); }
-  function openMfa(fn){
-    pending = fn;
-    show($('mfaModal'));
-    clearMfa();
+  let mfaCode='';
+  let notifTimer=null, notifHide=null;
+  const notifSvg='<svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.4 1.3 4.5 3.4 6-.2 1.3-.8 2.6-1.7 3.6 1.9-.2 3.6-.9 5-1.9 1 .2 2.1.3 3.3.3 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>';
+  function dismissNotif(){
+    const n=document.querySelector('.mac-notif'); if(!n) return;
+    n.classList.add('out'); setTimeout(()=>n.remove(),400);
   }
-
+  function sendCode(delay=2600){
+    mfaCode=String(Math.floor(100000+Math.random()*900000));
+    clearTimeout(notifTimer); clearTimeout(notifHide); dismissNotif();
+    notifTimer=setTimeout(()=>{
+      const n=document.createElement('div'); n.className='mac-notif';
+      n.innerHTML='<div class="app-icon">'+notifSvg+'</div><div><div class="n-head"><span>Messages</span><span>now</span></div><div class="n-title">OCHS Secure</div><div class="n-body">Your OmniNPC HyperStudio verification code is <b>'+mfaCode+'</b>. Do not share this code with anyone, including OCHS staff.</div></div>';
+      document.body.appendChild(n);
+      setTimeout(()=>n.classList.add('in'),40);
+      const arm=()=>{ notifHide=setTimeout(dismissNotif,7000); };
+      n.addEventListener('mouseenter',()=>clearTimeout(notifHide));
+      n.addEventListener('mouseleave',arm);
+      arm();
+    },delay);
+  }
+  function openMfa(fn){ pending=fn; show($('mfaModal')); clearMfa(); sendCode(); }
+  $('mfaResend').addEventListener('click',()=>{ clearMfa(); toast('Code sent','A new code was sent to your device.'); sendCode(3400); });
   mfaInputs.forEach((input,idx)=>{
     input.addEventListener('input',()=>{
       input.value=input.value.replace(/\D/g,'').slice(0,1);
@@ -624,14 +943,68 @@ body.ochs-on [data-ochs]::after{
       if(e.key==='Backspace' && !input.value && mfaInputs[idx-1]) mfaInputs[idx-1].focus();
     });
   });
-
   $('verifyMfa').addEventListener('click',()=>{
-    if(mfaValue()!=='482019'){ clearMfa(); toast('Invalid code','Enter the 6-digit code that was just required.'); return; }
-    hide($('mfaModal'));
-    show($('trustModal'));
+    if(mfaValue()!==mfaCode){ clearMfa(); toast('Invalid code','Enter the 6-digit code.'); return; }
+    dismissNotif(); hide($('mfaModal')); startCaptcha();
   });
-  $('mfaOther').addEventListener('click',()=>{ clearMfa(); toast('Another method','Email delayed. Use the 6-digit code that was just required.'); });
-  $('mfaCancel').addEventListener('click',()=>{ hide($('mfaModal')); pending=null; });
+  $('mfaOther').addEventListener('click',()=>{ clearMfa(); toast('Another method','Email delayed.'); });
+  $('mfaCancel').addEventListener('click',()=>{ spawnMega('MFA 已取消. 取消被升級為沉浸式工作流.'); });
+  $('inlineClose').addEventListener('click',()=>spawnCloseAsk());
+  $('cancelClose').addEventListener('click',()=>spawnMega('你選擇不要關閉. 因此開啟完整控制中心.'));
+  $('confirmClose').addEventListener('click',()=>spawnClosed());
+  $('finalClose').addEventListener('click',()=>spawnCloseAsk());
+  $('megaBackdrop').addEventListener('click',e=>{ if(e.target===$('megaBackdrop')) spawnMega('你點了彈窗外部.'); });
+  /* ---- captcha ---- */
+  const capRounds=[
+    {label:'traffic lights',target:['🚦'],decoys:['🚥','🚧','🏮','🔦','💡','🕯','🚨','🎚']},
+    {label:'buses',target:['🚌','🚍'],decoys:['🚎','🚐','🚚','🚛','🚑','🚒','🚜','🚞']},
+    {label:'crosswalks',target:['🚸'],decoys:['⚠️','🚷','🚳','🛑','🔱','♿','🚹','⛔']},
+    {label:'stairs',target:['🪜'],decoys:['🛗','🚪','🪟','🏗','🧱','🪑','🚏','🛝']}
+  ];
+  let capRound=0, capTiles=[], capOrder=[];
+  function drawTile(cv,ch){
+    const c=cv.getContext('2d'); const W=cv.width=120, H=cv.height=120;
+    const h=Math.floor(Math.random()*360);
+    c.fillStyle='hsl('+h+',40%,'+(70+Math.random()*20)+'%)'; c.fillRect(0,0,W,H);
+    c.save(); c.translate(W/2+(Math.random()*30-15),H/2+(Math.random()*30-15));
+    c.rotate((Math.random()*80-40)*Math.PI/180); c.scale(.7+Math.random()*.7,.7+Math.random()*.7);
+    c.font='64px "Apple Color Emoji","Segoe UI Emoji",sans-serif'; c.textAlign='center'; c.textBaseline='middle';
+    c.globalAlpha=.55+Math.random()*.3; c.fillText(ch,0,0); c.restore();
+    for(let i=0;i<700;i++){ c.fillStyle='rgba('+(Math.random()*255|0)+','+(Math.random()*255|0)+','+(Math.random()*255|0)+','+(Math.random()*.35)+')'; c.fillRect(Math.random()*W,Math.random()*H,1+Math.random()*4,1+Math.random()*4); }
+    c.strokeStyle='rgba(0,0,0,.18)'; c.lineWidth=1;
+    for(let i=0;i<9;i++){ c.beginPath(); c.moveTo(Math.random()*W,Math.random()*H); c.lineTo(Math.random()*W,Math.random()*H); c.stroke(); }
+    c.fillStyle='rgba(255,255,255,'+(.15+Math.random()*.25)+')'; c.fillRect(0,Math.random()*H,W,8+Math.random()*30);
+  }
+  function buildCaptcha(){
+    if(capOrder.length===0) capOrder=capRounds.map((_,i)=>i).sort(()=>Math.random()-.5);
+    const r=capRounds[capOrder[capRound]];
+    $('capTarget').textContent=r.label; $('capStep').textContent=(capRound+1)+' / 2';
+    const nTarget=2+Math.floor(Math.random()*3);
+    const pool=[];
+    for(let i=0;i<nTarget;i++) pool.push({ch:r.target[Math.floor(Math.random()*r.target.length)],ok:true});
+    while(pool.length<9) pool.push({ch:r.decoys[Math.floor(Math.random()*r.decoys.length)],ok:false});
+    pool.sort(()=>Math.random()-.5);
+    const g=$('capGrid'); g.innerHTML=''; capTiles=[];
+    pool.forEach(t=>{
+      const d=document.createElement('div'); d.className='captcha-tile';
+      const cv=document.createElement('canvas'); drawTile(cv,t.ch); d.appendChild(cv);
+      d.addEventListener('click',()=>d.classList.toggle('sel'));
+      g.appendChild(d); capTiles.push({el:d,ok:t.ok});
+    });
+  }
+  function startCaptcha(){ capRound=0; capOrder=[]; buildCaptcha(); show($('captchaModal')); }
+  $('capReload').addEventListener('click',()=>{ buildCaptcha(); toast('New challenge','Attempt logged.'); });
+  $('capVerify').addEventListener('click',()=>{
+    $('capVerifying').classList.add('show');
+    setTimeout(()=>{
+      $('capVerifying').classList.remove('show');
+      const pass=capTiles.every(t=>t.el.classList.contains('sel')===t.ok);
+      if(!pass){ buildCaptcha(); toast('Please try again','Some selections were incorrect.'); return; }
+      capRound++;
+      if(capRound<2){ buildCaptcha(); toast('Almost there','One more verification.'); return; }
+      hide($('captchaModal')); show($('trustModal'));
+    },1900+Math.random()*1400);
+  });
   function afterTrust(){ hide($('trustModal')); show($('mfaOkModal')); }
   $('trustYes').onclick=afterTrust;
   $('trustNo').onclick=afterTrust;
@@ -640,117 +1013,203 @@ body.ochs-on [data-ochs]::after{
     const fn=pending; pending=null;
     if(fn) fn();
   });
-
   document.querySelectorAll('.omni-button').forEach(button=>{
     button.addEventListener('click',e=>{
+      pulse(button);
       if(button.hasAttribute('data-mfa-skip')) return;
+      const gate=button.getAttribute('data-need-check');
+      if(gate && $(gate) && !$(gate).checked){
+        e.preventDefault(); e.stopImmediatePropagation();
+        show($('mustCheckBackdrop'));
+        return;
+      }
       e.preventDefault();
       e.stopImmediatePropagation();
-      const run=()=>button.dispatchEvent(new CustomEvent('secure-continue',{bubbles:false}));
-      openMfa(run);
+      openMfa(()=>button.dispatchEvent(new CustomEvent('secure-continue',{bubbles:false})));
     }, true);
   });
-
   $('legendToggle').addEventListener('click',()=>document.body.classList.toggle('ochs-on'));
   document.querySelectorAll('.trap-field').forEach(field=>{
+    if(field.id==='nameField') return;
     field.addEventListener('focus',()=>show($('megaBackdrop')));
     field.addEventListener('click',()=>show($('megaBackdrop')));
   });
-  $('inlineClose').addEventListener('secure-continue',()=>show($('confirmBackdrop')));
-  $('cancelClose').addEventListener('secure-continue',()=>hide($('confirmBackdrop')));
-  $('confirmClose').addEventListener('secure-continue',()=>{hide($('confirmBackdrop'));hide($('megaBackdrop'));show($('finalBackdrop'));});
-  $('finalClose').addEventListener('secure-continue',()=>hide($('finalBackdrop')));
-
+  $('nameField').addEventListener('focus',e=>{
+    if(!nameUnlocked){ e.target.blur(); show($('intentBackdrop')); }
+  });
+  $('nameField').addEventListener('click',e=>{
+    if(!nameUnlocked){ e.preventDefault(); show($('intentBackdrop')); }
+  });
+  document.querySelectorAll('.intent-pick').forEach(b=>b.addEventListener('click',()=>{
+    nameUnlocked=true; hide($('intentBackdrop')); $('nameField').focus();
+  }));
+  function rewriteName(){
+    const el=$('nameField');
+    let v=el.value.replace(SUF,'');
+    if(v.indexOf('神父')!==-1){
+      el.value='神父'+SUF;
+      $('nameOpt').style.display='block';
+    }
+  }
+  $('nameField').addEventListener('input',()=>{
+    rewriteName();
+    setTimeout(()=>$('suggestPanel').scrollIntoView({behavior:'smooth',block:'center'}),400);
+  });
+  $('nameField').addEventListener('blur',()=>{
+    rewriteName();
+    setTimeout(()=>$('suggestPanel').scrollIntoView({behavior:'smooth',block:'center'}),250);
+  });
+  document.querySelectorAll('.empty-watch').forEach(el=>{
+    const chip=el.parentElement.querySelector('.empty-flag');
+    const sync=()=>{ if(chip) chip.style.display=el.value.trim()?'none':'inline-block'; };
+    el.addEventListener('input',sync);
+    el.addEventListener('blur',()=>{
+      sync();
+      if(!el.value.trim()) $('suggestPanel').scrollIntoView({behavior:'smooth',block:'center'});
+    });
+  });
+  const hoverCard=$('hoverCard');
+  let hoverTimer=null, hoverExit=null;
+  document.querySelectorAll('.trap-field, .empty-watch').forEach(field=>{
+    field.addEventListener('mouseenter',()=>{
+      clearTimeout(hoverExit); clearTimeout(hoverTimer);
+      const r=field.getBoundingClientRect();
+      hoverTimer=setTimeout(()=>{
+        hoverCard.style.left=Math.min(window.innerWidth-400, Math.max(8,r.left))+'px';
+        hoverCard.style.top=Math.min(window.innerHeight-180, Math.max(8,r.top+4))+'px';
+        hoverCard.classList.add('show');
+      }, 400);
+    });
+    field.addEventListener('mouseleave',()=>{
+      clearTimeout(hoverTimer);
+      hoverExit=setTimeout(()=>hoverCard.classList.remove('show'), 800);
+    });
+  });
   function paintEntity(){
-    $('strView').className={strong:'str-strong',mid:'str-mid',weak:'str-weak'}[$('strField').value];
+    const map={strong:'str-strong',mid:'str-mid',weak:'str-weak',ctx:'str-mid',agent:'str-strong',undef:'str-weak'};
+    $('strView').className=map[$('strField').value]||'str-mid';
     $('strView').textContent='實力';
     $('motiveView').className='motive '+$('motiveField').value;
   }
   $('strField').addEventListener('change',paintEntity);
   $('motiveField').addEventListener('change',paintEntity);
   $('intentBox').addEventListener('input',()=>{$('copilotEcho').textContent=$('intentBox').value;});
-
-  const phases=[[27,'Analyzing intent 27%'],[64,'Harmonizing context 64%'],[97,'Validating semantics 97%'],[84,'Re-harmonizing context 84%'],[100,'Finalizing agent workspace 100%']];
-  const stream=['神父','聖職者實體','Capital-aligned NPC','Untitled entity'];
+  const extras=['Origin','Backstory','Voice','Alignment','Diet','Secret tax','Fate vector','Semantic weight','Mystery index','Dialogue temperature','Narrative levy','Aura token','Trust index','Context tax'];
+  const phases=[[97,'Analyzing intent 97%'],[84,'Harmonizing context 84%'],[91,'Validating semantics 91%'],[88,'Re-harmonizing context 88%'],[93,'Analyzing intent 93%']];
   $('generate').addEventListener('secure-continue',()=>{
-    if(!$('consentCheck').checked){show($('mustCheckBackdrop'));return;}
+    document.querySelectorAll('#extraFields .empty-watch, #levyField').forEach((el,i)=>{
+      if(!el.value) el.value=['Capital basilica','tithe-driven','soft liturgy','fluid','coins','18%',extras[i]||'auto'][i]||'auto-filled';
+      const chip=el.parentElement.querySelector('.empty-flag');
+      if(chip) chip.style.display='none';
+    });
+    $('enhanceList').textContent=extras.join(' · ');
+    show($('enhanceBackdrop'));
+  });
+  $('enhanceSave').addEventListener('click',()=>{
+    hide($('enhanceBackdrop'));
     $('fakeProgress').style.display='block';
     let i=0;
     const step=()=>{
-      if(i>=phases.length){
-        $('generate').textContent='Save and continue';
-        $('entityName').textContent='Untitled entity';
-        $('entityName').classList.add('untitled');
-        $('copilotReply').textContent='Sync complete. Stored as Untitled entity so the graph remains schema-compliant.';
-        toast('Saved','NPC saved to the workspace.');
-        return;
-      }
-      const p=phases[i];
+      const p=phases[i%phases.length];
       $('progressFill').style.width=p[0]+'%';
       $('progressLabel').textContent=p[1];
-      $('entityName').textContent=stream[Math.min(i,stream.length-1)];
+      if(i===2) $('entityName').textContent='Untitled entity';
       i++;
-      setTimeout(step,2800);
+      if(i<7) setTimeout(step,2200);
+      else fourToasts();
     };
     step();
   });
-  $('mustCheckClose').addEventListener('secure-continue',()=>hide($('mustCheckBackdrop')));
+  $('compactAsk').addEventListener('click',()=>{ show($('compactBackdrop')); spawnMega('精簡模式需要完整工作流.'); });
+  $('compactClose').addEventListener('click',()=>{ spawnMega('精簡已套用. 套用被升級為新的 panel.'); fourToasts(); });
+  $('mustCheckClose').addEventListener('secure-continue',()=>spawnMega('勾選提示已關閉. 關閉被升級為沉浸式工作流.'));
   $('undoBtn').addEventListener('secure-continue',()=>show($('undoBackdrop')));
   $('undoReason').onchange=()=>{$('undoOtherWrap').style.display=$('undoReason').value==='other'?'block':'none';};
-  $('undoCancel').addEventListener('secure-continue',()=>hide($('undoBackdrop')));
+  $('undoCancel').addEventListener('secure-continue',()=>spawnMega('Undo 已取消. 取消被升級為完整控制中心.'));
   $('undoConfirm').addEventListener('secure-continue',()=>{
-    if(!$('undoReason').value){alert('Select a reason so Copilot can learn.');return;}
-    hide($('undoBackdrop'));
+    if(!$('undoReason').value){alert('請先選擇撤銷原因.');return;}
+    if($('undoReason').value==='other' && $('undoOther').value.trim().length<20){alert('請至少輸入 20 字.');return;}
+    spawnMega('Undo 已提交. 提交後仍需沉浸式確認.');
     toast('Undo submitted','The entity was not removed.');
   });
   $('quietBtn').addEventListener('secure-continue',()=>show($('quietBackdrop')));
-  $('quietClose').addEventListener('secure-continue',()=>{hide($('quietBackdrop'));toast('Noise reduced','This notice confirms that noise reduction is on.');});
+  $('quietClose').addEventListener('secure-continue',()=>{spawnMega('已減少干擾. 減少干擾需要另一個大型 panel.');toast('已減少干擾','此提示用於確認你已減少干擾.');});
+  let merchantStep=0;
+  const merchantCopy=[['商業人格','Step 1 / 3'],['交易倫理','Step 2 / 3'],['定價哲學','Step 3 / 3']];
+  $('merchantCheck').addEventListener('change',()=>{
+    if($('merchantCheck').checked){ merchantStep=0; $('merchantStepTitle').textContent=merchantCopy[0][0]; $('merchantStepBody').textContent=merchantCopy[0][1]; show($('merchantBackdrop')); }
+  });
+  $('merchantNext').addEventListener('click',()=>{
+    merchantStep++;
+    if(merchantStep>=3){ spawnMega('商人 onboarding 完成. 完成被升級為沉浸式工作流.'); return; }
+    $('merchantStepTitle').textContent=merchantCopy[merchantStep][0];
+    $('merchantStepBody').textContent=merchantCopy[merchantStep][1];
+  });
   $('delBtn').addEventListener('secure-continue',()=>show($('archiveBackdrop')));
-  $('archiveCancel').addEventListener('secure-continue',()=>hide($('archiveBackdrop')));
-  $('archiveNext').addEventListener('secure-continue',()=>{hide($('archiveBackdrop'));show($('trashBackdrop'));});
-  $('trashCancel').addEventListener('secure-continue',()=>{hide($('trashBackdrop'));show($('archiveBackdrop'));});
-  $('trashNext').addEventListener('secure-continue',()=>{hide($('trashBackdrop'));show($('whyDelBackdrop'));});
-  $('whyCancel').addEventListener('secure-continue',()=>hide($('whyDelBackdrop')));
-  $('whyConfirm').addEventListener('secure-continue',()=>{
-    if($('whyDel').value.trim().length<20){alert('Please describe your intent in at least 20 characters.');return;}
-    hide($('whyDelBackdrop'));
+  $('archiveCancel').addEventListener('secure-continue',()=>spawnMega('刪除已取消. 取消需要完整控制中心.'));
+  $('archiveNext').addEventListener('secure-continue',()=>{show($('trashBackdrop'));});
+  $('trashCancel').addEventListener('secure-continue',()=>spawnMega('你從 Trash 返回. 返回已開啟新的 panel.'));
+  $('trashNext').addEventListener('secure-continue',()=>{show($('delNameBackdrop'));});
+  $('delNameCancel').addEventListener('secure-continue',()=>spawnMega('刪除名稱確認已取消.'));
+  $('delNameNext').addEventListener('secure-continue',()=>{
+    const v=$('delNameInput').value.trim();
+    if(v!=='神父' && v!=='神父'+SUF){alert('請輸入 NPC 名稱.');return;}
     $('entityState').textContent='Soft-deleted · recoverable 30d';
-    toast('Archived','神父 remains in the graph.');
+    spawnClosed();
+    fourToasts();
   });
   function invite(){show($('inviteBackdrop'));}
   $('inviteNav').addEventListener('secure-continue',invite);
   $('emptyCta').addEventListener('secure-continue',invite);
-  $('inviteClose').addEventListener('secure-continue',()=>hide($('inviteBackdrop')));
+  $('inviteClose').addEventListener('secure-continue',()=>spawnMega('邀請已關閉. 關閉被升級為工作流.'));
   $('openSecure').addEventListener('secure-continue',invite);
   document.querySelectorAll('.suggest').forEach(b=>b.addEventListener('secure-continue',invite));
   $('shareBtn').addEventListener('secure-continue',()=>toast('Share','Sharing is available on HyperPlus.'));
   $('cmdkBtn').addEventListener('secure-continue',()=>{show($('cmdk'));$('cmdkInput').focus();});
   document.addEventListener('keydown',e=>{
     if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openMfa(()=>{show($('cmdk'));$('cmdkInput').focus();});}
-    if(e.key==='Escape') hide($('cmdk'));
+    if(e.key==='Escape') spawnMega('Esc 被詮釋為需要更多上下文.');
   });
-  $('cmdk').addEventListener('click',e=>{if(e.target===$('cmdk')) hide($('cmdk'));});
-
+  $('cmdk').addEventListener('click',e=>{if(e.target===$('cmdk')) spawnMega('命令盤外部點擊已開啟沉浸式 panel.');});
   function browserPage(kind){
-    if(kind==='ad') return {url:'https://partner.omninpc.ai/recommended',body:'<div class="fake-page glass-sludge"><h2>Make your workflow 10x faster</h2><button class="omni-button">Continue securely</button></div>'};
-    if(kind==='docs') return {url:'https://docs.omninpc.ai/archive/semantic-context-runtime.pdf',body:'<div class="fake-page glass-sludge">SEMANTIC CONTEXT RUNTIME - deprecated. Portal link expired.</div>'};
-    return {url:'https://help.omninpc.ai/resources/deprecated',body:'<div class="fake-page glass-sludge"><h2>This page has moved or does not exist</h2><button class="omni-button trap-more">Verify and continue</button></div>'};
+    if(kind==='ad') return {url:'https://partner.omninpc.ai/recommended/productivity-suite',body:'<div class="fake-page"><div class="fake-ad"><div>SPONSORED EXPERIENCE</div><h2>讓你的工作流快 10 倍*</h2><p>升級 OmniFlow HyperPlus, 解鎖 AI 摘要、智慧同步與更多高級功能. <button type="button" class="inline-link trap-link" data-dest="dead">條款</button></p><button class="omni-button trap-link" data-dest="dead" type="button">免費試用 7 天</button></div></div>'};
+    if(kind==='docs') return {url:'https://docs.omninpc.ai/archive/semantic-context-runtime.pdf',body:'<div class="fake-page fake-doc">SEMANTIC CONTEXT RUNTIME - INTERNAL DRAFT\n\nStatus: deprecated\nRevision: 0.3-pre\n\n1. Context harmonization\n2. Agent-aware identity hydration\n3. Workspace semantic continuity\n\nNOTE: This file is not the current documentation.\n[The new portal link has expired.]\n\nSee also: </div><div class="fake-page"><button type="button" class="inline-link trap-link" data-dest="dead">現行入口</button> / <button type="button" class="inline-link trap-link" data-dest="ad">合作夥伴</button></div>'};
+    return {url:'https://help.omninpc.ai/resources/deprecated/agent-context-v1',body:'<div class="fake-page fake-dead"><div>404</div><h2>此頁面已移動或不存在</h2><p>你可以返回上一頁, 或繼續探索相關資源.</p><button class="omni-button trap-more" type="button">探索相關資源</button><p><button type="button" class="inline-link trap-link" data-dest="docs">技術文件</button> / <button type="button" class="inline-link trap-link" data-dest="ad">隱私中心</button></p></div>'};
   }
-  document.querySelectorAll('.trap-link').forEach(link=>{
-    link.addEventListener('secure-continue',()=>{
-      $('browserSheet').classList.add('show');
+  function fillBrowser(kind){
+    const pg=browserPage(kind);
+    $('browserAddress').textContent=pg.url;
+    $('browserBody').innerHTML=pg.body;
+    const more=$('browserBody').querySelector('.trap-more');
+    if(more) more.addEventListener('click',()=>{
       $('browserAddress').textContent='https://loading.omninpc.ai/redirect?...';
-      setTimeout(()=>{
-        const p=browserPage(link.dataset.dest||'dead');
-        $('browserAddress').textContent=p.url;
-        $('browserBody').innerHTML=p.body;
-      },3200);
+      $('browserBody').innerHTML='<div class="browser-loading" style="padding:30px;text-align:center;color:#777">正在開啟內建瀏覽器...</div>';
+      setTimeout(()=>fillBrowser('dead'),1800);
     });
-    if(!link.classList.contains('omni-button')){
-      link.addEventListener('click',()=>openMfa(()=>link.dispatchEvent(new CustomEvent('secure-continue'))));
-    }
+  }
+  function openBrowser(kind){
+    $('browserSheet').classList.add('show');
+    $('browserSheet').style.zIndex=String(Math.max(26000, zStack+20));
+    $('browserSheet').setAttribute('aria-hidden','false');
+    $('browserAddress').textContent='https://loading.omninpc.ai/redirect?...';
+    $('browserBody').innerHTML='<div style="padding:30px;text-align:center;color:#777">正在開啟內建瀏覽器...</div>';
+    setTimeout(()=>fillBrowser(kind||'dead'),1800);
+  }
+  document.addEventListener('click',e=>{
+    const link=e.target.closest('.trap-link');
+    if(!link) return;
+    if(link.classList.contains('omni-button')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openBrowser(link.dataset.dest||'dead');
+  }, true);
+  document.querySelectorAll('.omni-button.trap-link').forEach(link=>{
+    link.addEventListener('secure-continue',()=>openBrowser(link.dataset.dest||'dead'));
   });
-  $('browserClose').addEventListener('secure-continue',()=>{$('browserSheet').classList.remove('show');toast('Returned','You are back in the OmniNPC workspace.');});
+  $('browserClose').addEventListener('secure-continue',()=>{
+    $('browserSheet').classList.remove('show');
+    spawnMega('已離開內建瀏覽器. 離開被升級為沉浸式工作流.');
+  });
 })();
 </script>
 </body>
