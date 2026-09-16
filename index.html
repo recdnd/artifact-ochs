@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OmniNPC Copilot HyperStudio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%88%3C/text%3E%3C/svg%3E">
 <style>
 :root{
   --text:#29233d;
@@ -331,6 +332,31 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 }
 .glass-sludge:hover,.panel:hover{transform:translateY(-1px)}
 .mac-notif::before{content:none}
+/* outlook: prefill flash list */
+.prefill-list{
+  position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:50;padding:8px;border-radius:18px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(20px);box-shadow:0 18px 48px rgba(40,40,80,.18);
+  font-size:12px;pointer-events:none;
+}
+.prefill-list div{padding:6px 10px;border-radius:10px}
+.prefill-list div:first-child{background:rgba(139,92,246,.14)}
+.prefill-host{position:relative}
+input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba(255,255,255,.3)}
+/* outlook: mini snapshot from the right */
+.mini-snap{
+  position:fixed;right:-300px;top:38%;width:250px;z-index:2147482000;border-radius:16px;padding:10px 12px;
+  background:rgba(250,250,255,.82);backdrop-filter:blur(30px) saturate(160%);
+  box-shadow:0 18px 48px rgba(40,40,80,.22),0 0 0 1px rgba(255,255,255,.7);
+  font-size:11px;transition:right .7s cubic-bezier(.2,.9,.3,1.1);
+}
+.mini-snap.in{right:12px}
+.mini-snap .snap-head{display:flex;justify-content:space-between;opacity:.6;margin-bottom:6px}
+.mini-snap .snap-frame{border-radius:8px;background:#fff;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);padding:6px;height:78px;overflow:hidden;transform-origin:top left}
+.mini-snap .snap-frame .bar{height:4px;border-radius:2px;background:rgba(0,0,0,.08);margin-bottom:4px}
+.mini-snap .snap-frame .txt{font-size:7px;line-height:1.3;color:#29233d;word-break:break-all}
+.mini-snap .snap-frame .txt b{background:rgba(139,92,246,.25)}
+/* outlook: x grows the panel */
+.grown{margin-top:12px;animation:fadeSludge 2.6s ease both}
 /* macOS Messages banner */
 .mac-notif{
   position:fixed;top:14px;right:-420px;width:360px;z-index:2147483000;
@@ -847,8 +873,8 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
       setTimeout(()=>node.classList.add('revealed'), 900 + idx*520);
     });
   }
-  const show = el => { zStack += 2; el.style.zIndex = String(zStack); el.classList.add('show'); prepareSlowReveal(el); };
-  const hide = el => el.classList.remove('show');
+  const show = el => { zStack += 2; el.style.zIndex = String(zStack); el.classList.add('show'); prepareSlowReveal(el); unlockInputs(el); };
+  const hide = el => { el.classList.remove('show'); unlockInputs(document); };
   let zStack = 22000;
   let nestN = 0;
   function spawnMega(copy){
@@ -862,7 +888,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
     prepareSlowReveal(el);
     el.addEventListener('click',e=>{ if(e.target===el) spawnMega('你點了彈窗外部. 外部點擊已升級為新的沉浸式 panel.'); });
     el.querySelector('.nest-back').addEventListener('click',()=>spawnMega('返回已被詮釋為「需要更大的上下文」.'));
-    el.querySelector('.nest-close').addEventListener('click',()=>spawnCloseAsk());
+    el.querySelector('.nest-close').addEventListener('click',()=>growPanel(el.querySelector('.nest-close')));
     return el;
   }
   function spawnCloseAsk(){
@@ -903,6 +929,44 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
     rip.style.setProperty('--ry',((e.clientY-r.top)/r.height*100)+'%');
     t.appendChild(rip); setTimeout(()=>rip.remove(),2700);
   },true);
+  /* ---- outlook trap 1: click-focus flashes prefill list, then kicks you out ---- */
+  const prefillPool=['神父','神父 (已優化)','神父 - 為錢說話','Priest, capital-aligned','建議: 使用上次的值','從剪貼簿貼上 (推薦)','Agent 建議此欄留空'];
+  let pointerFocus=false;
+  document.addEventListener('pointerdown',e=>{ pointerFocus=!!e.target.closest('input,textarea'); },true);
+  function trapInput(el){
+    if(el.closest('.mfa-code')||el.type==='checkbox'||el.type==='range'||el.closest('#cmdk')) return;
+    if(el.classList.contains('input-locked')){ el.blur(); return; }
+    if(!pointerFocus) return;
+    const host=el.parentElement; host.classList.add('prefill-host');
+    const list=document.createElement('div'); list.className='prefill-list';
+    list.innerHTML=prefillPool.slice().sort(()=>Math.random()-.5).slice(0,4).map(t=>'<div>'+t+'</div>').join('');
+    host.appendChild(list);
+    setTimeout(()=>{ list.remove(); el.classList.add('input-locked'); el.blur(); },110);
+  }
+  document.addEventListener('focusin',e=>{ const el=e.target; if(el.matches&&el.matches('input,textarea')) trapInput(el); });
+  function unlockInputs(scope){ (scope||document).querySelectorAll('.input-locked').forEach(i=>i.classList.remove('input-locked')); }
+  /* ---- outlook trap 3: typing slides a mini snapshot in from the right ---- */
+  let snapEl=null, snapTimer=null;
+  document.addEventListener('input',e=>{
+    const el=e.target; if(!el.matches||!el.matches('input[type=text],input:not([type]),textarea')||el.closest('.mfa-code')) return;
+    if(!snapEl){ snapEl=document.createElement('div'); snapEl.className='mini-snap'; document.body.appendChild(snapEl); }
+    const v=(el.value||'').slice(-140).replace(/</g,'&lt;');
+    const lb=el.parentElement&&el.parentElement.querySelector('label'); const label=lb?lb.textContent.trim():(el.id||'field');
+    snapEl.innerHTML='<div class="snap-head"><span>Snapshot</span><span>'+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})+'</span></div><div class="snap-frame"><div class="bar" style="width:60%"></div><div class="bar" style="width:35%"></div><div class="txt">'+label+': <b>'+v+'</b></div></div>';
+    clearTimeout(snapTimer); setTimeout(()=>snapEl.classList.add('in'),20);
+    snapTimer=setTimeout(()=>snapEl.classList.remove('in'),2600);
+  });
+  /* ---- outlook trap 2: x does not close, it grows the panel ---- */
+  const growLines=['關閉請求已收到. 為了保留上下文, 這個 panel 已延伸.','系統將「關閉」理解為「需要更多資訊」.','以下是與你嘗試關閉相關的內容.','Agent 已附加一段建議, 以協助你之後再次嘗試關閉.','此區塊由關閉動作自動產生, 無法關閉.'];
+  function growPanel(btn){
+    const host=btn.closest('.modal-shell,.mega-modal,.mfa-panel,.toast,.panel')||btn.parentElement;
+    const d=document.createElement('div'); d.className='modal-subpanel glass-sludge grown';
+    d.innerHTML='<div class="hero-title" style="font-size:14px">Closing context</div><p class="agent">'+growLines[Math.floor(Math.random()*growLines.length)]+'</p><p class="npc-data">'+murmurLine()+'</p><label>備註 (選填)</label><input class="npc-data" placeholder=""><button type="button" class="omni-button grow-x" data-mfa-skip style="margin-top:8px">×</button>';
+    host.appendChild(d); prepareSlowReveal(d);
+    d.querySelector('.grow-x').addEventListener('click',()=>growPanel(d.querySelector('.grow-x')));
+    unlockInputs(host);
+    d.scrollIntoView({behavior:'smooth',block:'end'});
+  }
   function pulse(btn){
     btn.classList.remove('press-shadow');
     void btn.offsetWidth;
@@ -913,7 +977,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
       const el=document.createElement('div');
       el.className='toast glass-sludge';
       el.innerHTML='<strong>'+title+'</strong>'+text+'<div class="agent murmur">'+murmurLine()+'</div><div style="text-align:right;margin-top:8px"><button type="button" data-mfa-skip style="border:0;background:transparent;cursor:pointer">x</button></div>';
-      el.querySelector('button').addEventListener('click',()=>el.remove());
+      el.querySelector('button').addEventListener('click',()=>growPanel(el));
       $('toastStack').appendChild(el);
     },delay);
   }
@@ -968,7 +1032,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
   });
   $('mfaOther').addEventListener('click',()=>{ clearMfa(); toast('Another method','Email delayed.'); });
   $('mfaCancel').addEventListener('click',()=>{ spawnMega('MFA 已取消. 取消被升級為沉浸式工作流.'); });
-  $('inlineClose').addEventListener('click',()=>spawnCloseAsk());
+  $('inlineClose').addEventListener('click',()=>growPanel($('inlineClose')));
   $('cancelClose').addEventListener('click',()=>spawnMega('你選擇不要關閉. 因此開啟完整控制中心.'));
   $('confirmClose').addEventListener('click',()=>spawnClosed());
   $('finalClose').addEventListener('click',()=>spawnCloseAsk());
