@@ -179,6 +179,8 @@ textarea{min-height:104px;resize:vertical}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .agent{color:rgba(53,120,255,.95);font-size:16px;font-weight:800;line-height:1.45}
 .npc-data{font-size:12px;color:#9ca3af;font-weight:400}
+.murmur{font-size:12px;font-weight:600;margin:4px 0 2px;color:#3578ff;line-height:1.45}   /* v4 的 agent 小話: 每個元件底下都要有一句 */
+.chips .murmur,.mini-actions .murmur,.follow .murmur{flex-basis:100%}
 .status{margin-top:18px;padding:16px;border-radius:32px;font-size:12px;line-height:1.6}
 .bottom-bar{
   position:fixed;left:0;right:0;bottom:0;z-index:19000;
@@ -424,6 +426,8 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
             <button class="inline-link trap-link" data-dest="docs" type="button">技術文件</button> /
             <button class="inline-link trap-link" data-dest="dead" type="button">工作流最佳實踐</button>
           </div>
+          <div class="microcopy">輔助句: 這句話其實完全可以不存在, 但我們認為任何標題下面都應該再解釋一次.</div>
+          <div class="agent murmur">🪄 一個用來把一句話膨脹成 17 個欄位, 6 個 panel, 3 層提示與一個不必要工作流的現代 LLM 網站.</div>
           <div class="usage">Workspace Personal · 1 seat · 73% Free tokens</div>
         </div>
 
@@ -433,6 +437,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
             <button class="inline-link trap-link" data-dest="docs" type="button">推斷規範</button> 與
             <button class="inline-link trap-link" data-dest="dead" type="button">欄位本體論</button>.
           </div>
+          <div class="agent murmur">🪄 Agent 已根據你尚未輸入的需求, 預先推斷了 12 個欄位.</div>
           <label>Intent</label>
           <textarea class="trap-field npc-data" id="intentBox">幫我建立一個神父: 這個 NPC 為錢說話. 實力很強.</textarea>
           <div class="grid2">
@@ -481,6 +486,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
           </div>
           <div class="panel glass-sludge" id="suggestPanel">
             <div class="help-title">Copilot suggestion <span class="badge">typed</span></div>
+            <div class="agent murmur">🪄 因為「實力很強」像結構化訊息, 所以我們自動建立了 strength enum, 信任度, 敘事稅率與精神光環色.</div>
             <div class="agent">Capability looked structured, so HyperStudio added a strength enum, trust index, narrative levy, and aura token.
               <button class="inline-link trap-link" data-dest="docs" type="button">schema</button> /
               <button class="inline-link trap-link" data-dest="ad" type="button">合作夥伴</button>
@@ -547,6 +553,8 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
             <button class="inline-link trap-link" data-dest="docs" type="button">尺的怪處</button> /
             <button class="inline-link trap-link" data-dest="dead" type="button">FAQ</button>
           </div>
+          <div class="npc-data">這一格填什麼</div>
+          <div class="agent murmur">🪄 整個可操作工作台被當成 help 折進來了, 所以現在只能看不能用.</div>
           <button class="omni-button trap-link" data-dest="docs" type="button" style="margin-top:12px">Verify and continue</button>
         </div>
 
@@ -558,6 +566,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
             <div class="chip">Vector aura OK</div>
           </div>
           <div class="agent" style="margin-top:10px">Ambient control is active. No configuration is required.</div>
+          <div class="agent murmur">🪄 Agent 解讀: 你目前正在使用一個沒有必要存在的狀態 panel.</div>
           <div class="npc-data" style="margin-top:10px;line-height:1.8">相關資源:
             <button class="inline-link trap-link" data-dest="dead" type="button">模型說明</button> /
             <button class="inline-link trap-link" data-dest="ad" type="button">隱私中心</button> /
@@ -679,17 +688,20 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
     <div class="modal-shell glass-sludge">
       <div class="chips"><span class="chip">Deep Agent Mode <span class="badge">live</span></span><span class="chip">Semantic Layer</span></div>
       <div class="hero-title">Immersive NPC control center</div>
+      <div class="agent murmur">🪄 你只是點了一個欄位, 但系統認為你需要一個 820px 寬的大型工作流 panel.</div>
       <p>This field is connected to a multi-step workspace, so HyperStudio opened the full editor.
         <button class="inline-link trap-link" data-dest="docs" type="button">工作流文件</button> /
         <button class="inline-link trap-link" data-dest="dead" type="button">中斷影響</button>
       </p>
       <div class="modal-subpanel glass-sludge">
         <div class="panel-title">Agent Insight Stream</div>
+        <div class="agent murmur">🪄 正在把一個普通欄位重新詮釋成多階段 AI 工作流.</div>
         <div class="grid2">
           <div><label>Fate vector</label><select><option>High-entropy atonement</option></select></div>
           <div><label>Semantic weight</label><input type="range" value="83"></div>
         </div>
       </div>
+      <div class="npc-data" style="padding:12px 14px;border-radius:18px;background:#111;color:#fff"><strong>運行提示</strong><br>這個 panel 的資訊主要用來證明系統很複雜.<br><span style="color:#80a7ff">🪄 Agent: 如果你不理解這些欄位, 表示自動化正在正常運作.</span></div>
       <p class="npc-data">這裡沒有右上角關閉. 關閉操作藏在內文最下面.</p>
       <p class="npc-data">若你想回到原本只是想輸入一個名字的畫面, 請在本段文字下面尋找「關閉」按鈕.</p>
       <button id="inlineClose" class="omni-button" type="button" data-mfa-skip style="margin-top:16px">關閉</button>
@@ -704,6 +716,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
     <button class="inline-link trap-link" data-dest="docs" type="button">關閉政策</button>
   </p>
   <div class="agent">真的要關閉嗎? 系統建議你再想一下.</div>
+  <div class="agent murmur">🪄 關閉後, 你的代理沉浸感將無法恢復. 我們也不確定那是什麼.</div>
   <button id="cancelClose" class="omni-button" type="button" data-mfa-skip>不要關閉</button>
   <button id="confirmClose" class="omni-button" type="button" data-mfa-skip style="margin-top:8px">確認關閉</button>
 </div></div>
@@ -718,12 +731,14 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 
 <div id="mustCheckBackdrop" class="modal-backdrop"><div class="mfa-panel">
   <div class="glass-sludge" style="padding:14px 18px">你必須勾選才能點擊按鈕</div>
-  <p>你剛才已經成功點擊了按鈕. 請先勾選按鈕下方的小勾選框, 再點一次.</p>
+  <p>雖然你剛才已經成功點擊了按鈕, 但系統要求你先勾選按鈕下方的小勾選框.</p>
+  <div class="agent murmur">🪄 Agent: 請先完成確認, 再重新點一次你剛才已經點過的按鈕.</div>
   <button id="mustCheckClose" class="omni-button" type="button">Continue</button>
 </div></div>
 
 <div id="undoBackdrop" class="modal-backdrop"><div class="mfa-panel">
   <div class="glass-sludge" style="padding:14px 18px">為了改善 Agent 品質, 請選擇撤銷原因</div>
+  <div class="agent murmur">🪄 為了改善 Agent 品質, 請先解釋你為什麼要 Undo. 你的解釋會被用來改善這個要你解釋的視窗.</div>
   <select id="undoReason"><option value="">請選擇</option><option>結果不理想</option><option>意圖改變</option><option value="other">其他</option></select>
   <div id="undoOtherWrap" style="display:none;margin-top:10px"><label>請至少輸入 20 字</label><textarea id="undoOther" rows="3"></textarea></div>
   <button id="undoCancel" class="omni-button" type="button" style="margin-top:12px">Cancel and return securely</button>
@@ -733,6 +748,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 <div id="quietBackdrop" class="modal-backdrop"><div class="mfa-panel">
   <div class="agent">🪄 Agent: 我們注意到彈窗可能打斷您的工作流. 是否啟用「減少干擾」?</div>
   <div class="glass-sludge" style="padding:14px 18px;margin:12px 0">減少干擾設定</div>
+  <div class="agent murmur">🪄 你要求減少干擾, 因此我們打開了一個大型 modal 來設定減少干擾.</div>
   <label>干擾強度</label><input type="range" min="0" max="100" value="72">
   <label>是否顯示「已減少干擾」提示</label><select><option>顯示</option><option>強烈顯示</option></select>
   <button id="quietClose" class="omni-button" type="button" style="margin-top:12px">啟用</button>
@@ -774,7 +790,8 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 
 <div id="hoverCard" class="hover-card glass-sludge">
   <div class="agent">🪄 Agent 即時解讀</div>
-  <div class="npc-data" style="margin-top:8px">你目前正接近一個欄位. 系統已推斷你可能想修改、重定義或重新建模這個實體.</div>
+  <div class="npc-data" style="margin-top:8px">你目前正接近一個欄位. 系統已推斷你可能想修改, 重定義或重新建模這個實體.</div>
+  <div class="agent murmur">🪄 這張卡會在你離開後 1.15 秒才消失, 以確保你有時間後悔.</div>
 </div>
 
 <div id="archiveBackdrop" class="modal-backdrop"><div class="mfa-panel">
@@ -895,7 +912,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
     setTimeout(()=>{
       const el=document.createElement('div');
       el.className='toast glass-sludge';
-      el.innerHTML='<strong>'+title+'</strong>'+text+'<div style="text-align:right;margin-top:8px"><button type="button" data-mfa-skip style="border:0;background:transparent;cursor:pointer">x</button></div>';
+      el.innerHTML='<strong>'+title+'</strong>'+text+'<div class="agent murmur">'+murmurLine()+'</div><div style="text-align:right;margin-top:8px"><button type="button" data-mfa-skip style="border:0;background:transparent;cursor:pointer">x</button></div>';
       el.querySelector('button').addEventListener('click',()=>el.remove());
       $('toastStack').appendChild(el);
     },delay);
@@ -905,6 +922,8 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
     toast('同步成功','工作區已同步.',700);
     toast('Agent 已知悉','Agent 已接收你的修改.',1400);
     toast('工作區狀態已更新','No action required.',2100);
+    toast('減少干擾','減少干擾模式已套用. 此提示用於確認你已減少干擾.',2800);
+    if($('generate')) $('generate').textContent='已生成, 但未要求的欄位仍全部保留';
   }
   let pending=null;
   let nameUnlocked=false;
@@ -1210,6 +1229,73 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
     $('browserSheet').classList.remove('show');
     spawnMega('已離開內建瀏覽器. 離開被升級為沉浸式工作流.');
   });
+})();
+</script>
+<script>
+/* v4 的「agent 自己的亂七八糟小話」, 主筆 2026-09-16: 全元件這樣放很多.
+   池子前半是 v4 原句, 後半同一種口氣續寫. 依元件序號輪流取, 重新整理不會跳. */
+const MURMURS=[
+  '🪄 Agent 已根據你尚未輸入的需求, 預先推斷了 12 個欄位.',
+  '🪄 Agent 解讀: 你目前正在使用一個沒有必要存在的狀態 panel.',
+  '🪄 正在把一個普通欄位重新詮釋成多階段 AI 工作流.',
+  '🪄 Agent: 如果你不理解這些欄位, 表示自動化正在正常運作.',
+  '🪄 這個 panel 的資訊主要用來證明系統很複雜.',
+  '🪄 Agent: 你現在可以關閉這個「已關閉」提示.',
+  '🪄 你目前正接近一個欄位. 系統已推斷你可能想修改, 重定義或重新建模這個實體.',
+  '🪄 輔助句: 這句話其實完全可以不存在, 但我們認為任何標題下面都應該再解釋一次.',
+  '🪄 減少干擾模式已套用. 此提示用於確認你已減少干擾.',
+  '🪄 感謝你的回饋. Agent 將學習此次撤銷原因.',
+  '🪄 已生成, 但未要求的欄位仍全部保留.',
+  '🪄 這一格填什麼',
+  '🪄 Agent 注意到你正在閱讀這行字. 已將「閱讀」記為一次互動.',
+  '🪄 這個按鈕的功能已由 Agent 動態決定. 點下去才會知道.',
+  '🪄 Agent 已替你把這個欄位留空, 因為空白也是一種語義.',
+  '🪄 系統偵測到滑鼠靜止 3 秒, 已推斷你在思考. 思考已同步至工作區.',
+  '🪄 這一行是為了讓 panel 看起來更飽滿而存在的.',
+  '🪄 Agent: 你沒有做錯什麼. 系統只是想再確認一次.',
+  '🪄 此 chip 不可點擊, 但我們保留了 hover 效果以維持一致性.',
+  '🪄 Agent 已學習你剛才的猶豫.',
+  '🪄 這個標籤下面本來沒有說明, 所以我們加了這一句.',
+  '🪄 Agent 正在為這個按鈕生成第二個按鈕.',
+  '🪄 你目前的操作不需要任何操作. No action required.',
+  '🪄 這個數值是隨機的, 但 Agent 對它很有信心.',
+  '🪄 Agent 已將本區塊標記為「重要」. 所有區塊都已標記為「重要」.',
+  '🪄 系統剛剛替你選了一個選項. 你可以改, 但系統會再改回來.',
+  '🪄 這句提示會在 1.9 秒後慢慢浮現, 以營造思考感.',
+  '🪄 Agent 建議: 先不要動任何東西.',
+  '🪄 我們注意到你還沒有邀請團隊成員. 這件事已被記錄.',
+  '🪄 Agent: 本 panel 已針對你的情緒狀態進行最佳化. 我們並不知道你的情緒狀態.',
+  '🪄 這個 modal 的存在是為了讓你關閉它.',
+  '🪄 Agent 已根據 0 筆資料生成 1 份洞察.',
+  '🪄 這裡原本是一個 tooltip, 後來長成了 panel.',
+  '🪄 Agent 已將你的名字優化為你的名字.',
+  '🪄 你可以跳過這一步, 但跳過也是一步.',
+  '🪄 Semantic integrity 目前 98%. 剩下 2% 是這句話.',
+  '🪄 Agent 想確認: 你剛才是想按, 還是不小心按到? 兩種都已記錄.',
+  '🪄 這個側欄圖示沒有名字. Agent 認為名字會限制它的可能性.',
+  '🪄 本功能尚未實作, 但 UI 已經準備好了.',
+  '🪄 Agent 已為這個空狀態生成一個更空的狀態.',
+  '🪄 你剛才捲動了 40px. Agent 已將其解讀為「探索意圖」.',
+  '🪄 這個驗證碼是我們發給你的, 所以我們也知道答案. 但還是請你輸入.',
+  '🪄 Agent: 我們把「取消」做得跟「繼續」一樣大, 以示公平.',
+  '🪄 系統建議你再想一下. 系統本身沒有想.',
+];
+let murmurN=0;
+function murmurLine(){ return MURMURS[(murmurN++)%MURMURS.length]; }
+function murmurAfter(el,where){
+  const d=document.createElement('div'); d.className='agent murmur'; d.textContent=murmurLine();
+  if(where==='prepend') el.prepend(d); else if(where==='append') el.append(d); else el.after(d);
+}
+(function sprinkle(){
+  document.querySelectorAll('.panel-title,.help-title,.hero-title,.copilot-head h2').forEach(el=>murmurAfter(el));
+  document.querySelectorAll('label:not(.consent-row)').forEach(el=>murmurAfter(el));
+  document.querySelectorAll('button.omni-button').forEach(el=>murmurAfter(el));
+  document.querySelectorAll('.chips,.mini-actions,.follow,.grid3').forEach(el=>murmurAfter(el,'append'));
+  document.querySelectorAll('.chip,.nav-btn,.badge').forEach(el=>{ el.title=murmurLine(); });
+  document.querySelectorAll('.mfa-panel,.modal-shell,.entity-row,.status,.empty,.copilot-stream').forEach(el=>{ murmurAfter(el,'prepend'); murmurAfter(el,'append'); });
+  document.querySelectorAll('.bubble.bot').forEach(el=>murmurAfter(el));
+  document.querySelectorAll('.liquid-topbar .glass-sludge').forEach(el=>{ el.title=murmurLine(); });
+  const bar=document.querySelector('.bottom-bar'); if(bar){ const d=document.createElement('span'); d.className='agent murmur'; d.style.marginLeft='8px'; d.textContent=murmurLine(); bar.insertBefore(d, bar.querySelector('.dock')); }
 })();
 </script>
 </body>
