@@ -348,6 +348,31 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 .browser-body{height:calc(100% - 82px);overflow:auto;padding:18px;background:#fff}
 .fake-page{min-height:100%;border:1px solid #ececf2;border-radius:24px;padding:24px;background:#fff}
 .hover-card{position:fixed !important}
+/* AI upsell panel */
+.ai-upsell{
+  position:fixed !important;right:18px;bottom:18px;width:300px;z-index:2147480500;
+  transform:translateY(140%);transition:transform 2.8s cubic-bezier(.16,.8,.2,1),width 1.6s ease;
+  padding:14px 14px 12px;font-size:12px;
+}
+.ai-upsell.in{transform:none}
+.ai-upsell.mini{width:auto;padding:8px 12px;cursor:pointer}
+.ai-upsell.mini>*:not(.au-pill){display:none}
+.au-pill{display:none;font-weight:800}
+.ai-upsell.mini .au-pill{display:block}
+.au-head{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:13px;margin-bottom:6px}
+.au-head .au-later{font-size:11px;color:rgba(79,70,229,.85);cursor:pointer;font-weight:400}
+.au-sub{opacity:.75;margin-bottom:10px}
+.au-credits{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:4px}
+.au-bar{height:6px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;margin-bottom:10px}
+.au-bar i{display:block;height:100%;width:6%;background:linear-gradient(90deg,#8b5cf6,#ec4899);transition:width 2.4s ease}
+.au-topup{width:100%;min-height:0;padding:9px 12px;font-size:12px;margin-bottom:10px}
+.au-chat{border-radius:16px;background:rgba(255,255,255,.55);padding:8px;max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.au-msg{padding:6px 9px;border-radius:12px;max-width:90%;font-size:11px;line-height:1.35}
+.au-msg.bot{background:rgba(139,92,246,.12);align-self:flex-start}
+.au-msg.me{background:rgba(34,211,238,.16);align-self:flex-end}
+.au-row{display:flex;gap:6px}
+.au-row input{flex:1;min-width:0;padding:7px 10px;border-radius:999px;font-size:11px;background:rgba(255,255,255,.7)}
+.au-row button{min-height:0;width:auto;padding:6px 12px;font-size:12px}
 /* idle banners */
 .idle-rail{position:fixed;left:0;right:0;z-index:2147481000;display:flex;flex-direction:column;pointer-events:none}
 #idleTop{top:0}
@@ -885,6 +910,16 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
 </div></div>
 
 <div id="toastStack" class="toast-stack"></div>
+<div id="aiUpsell" class="ai-upsell glass-sludge">
+  <div class="au-pill">✨ AI</div>
+  <div class="au-head"><span>✨ Try our new AI features!</span><span class="au-later" id="auLater">稍後</span></div>
+  <div class="au-sub">你的工作區已支援 AI. 這個 panel 用來提醒你這件事.</div>
+  <div class="au-credits"><span>Credits</span><span id="auCredits">3 / 50</span></div>
+  <div class="au-bar"><i id="auBar"></i></div>
+  <button type="button" class="omni-button au-topup trap-link" data-dest="ad" data-mfa-skip>充值 · 解鎖更多 AI</button>
+  <div class="au-chat" id="auChat"><div class="au-msg bot">嗨! 我是你的 AI. 問我任何事, 每則訊息消耗 1 credit.</div></div>
+  <div class="au-row"><input id="auInput" class="no-trap" placeholder="問 AI..."><button type="button" class="omni-button" id="auSend" data-mfa-skip>送出</button></div>
+</div>
 <div id="idleTop" class="idle-rail"></div>
 <div id="idleBottom" class="idle-rail"></div>
 <div id="browserSheet" class="browser-sheet glass-sludge">
@@ -968,7 +1003,7 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
   let pointerFocus=false;
   document.addEventListener('pointerdown',e=>{ pointerFocus=!!e.target.closest('input,textarea'); },true);
   function trapInput(el){
-    if(el.closest('.mfa-code')||el.type==='checkbox'||el.type==='range'||el.closest('#cmdk')) return;
+    if(el.closest('.mfa-code')||el.type==='checkbox'||el.type==='range'||el.closest('#cmdk')||el.classList.contains('no-trap')) return;
     if(el.classList.contains('input-locked')){ el.blur(); return; }
     if(!pointerFocus) return;
     const host=el.parentElement; host.classList.add('prefill-host');
@@ -1001,6 +1036,24 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
     unlockInputs(host);
     d.scrollIntoView({behavior:'smooth',block:'end'});
   }
+  /* ---- AI upsell ---- */
+  let auCredits=3, auMiniTimer=null;
+  const au=$('aiUpsell');
+  setTimeout(()=>au.classList.add('in'),10000);
+  function auMini(){ au.classList.add('mini'); clearTimeout(auMiniTimer); auMiniTimer=setTimeout(()=>au.classList.remove('mini'),20000); }
+  $('auLater').addEventListener('click',e=>{ e.stopPropagation(); auMini(); });
+  au.addEventListener('click',()=>{ if(au.classList.contains('mini')) au.classList.remove('mini'); });
+  function auPush(cls,text){ const d=document.createElement('div'); d.className='au-msg '+cls; d.textContent=text; $('auChat').appendChild(d); $('auChat').scrollTop=1e6; }
+  function auSend(){
+    const v=$('auInput').value.trim(); if(!v) return;
+    $('auInput').value='';
+    if(auCredits<=0){ auPush('bot','你的 credits 已用完. 充值以繼續使用 AI.'); return; }
+    auPush('me',v); auCredits--; $('auCredits').textContent=auCredits+' / 50'; $('auBar').style.width=(auCredits/50*100)+'%';
+    setTimeout(()=>{ auPush('bot',murmurLine().replace(/^🪄 ?/,'')); if(auCredits<=0) setTimeout(()=>auPush('bot','你的 credits 已用完 (0 / 50). 充值以繼續.'),1200); },1800);
+  }
+  $('auSend').addEventListener('click',auSend);
+  au.querySelector('.au-topup').addEventListener('click',e=>{ e.stopPropagation(); openBrowser('ad'); });
+  $('auInput').addEventListener('keydown',e=>{ if(e.key==='Enter') auSend(); });
   /* ---- idle banners ---- */
   const idleLines=['你的工作區已於背景更新. 無需操作.','提示: 此橫幅不包含任何資訊.','Agent 注意到你已數秒未操作, 已為你保留上下文.','系統正在為你準備一個更好的體驗 (無預計時間).','新功能: 橫幅. 你正在使用它.','為了提升可靠性, 我們新增了此通知.','你的 session 仍然有效. 此訊息用於確認這一點.','Cookie 偏好已被記住, 但我們忘了是哪些.','已自動儲存你尚未輸入的內容.','本橫幅由前一個橫幅觸發.','我們更新了隱私政策. 內容與之前相同.','你沒有錯過任何事. 這是一個提醒.','Agent 建議: 繼續閒置以查看更多橫幅.','此區域保留給未來的重要訊息. 目前顯示這一句.'];
   const idleTags=['Notice','Update','Tip','Agent','System','Reminder','Beta'];
