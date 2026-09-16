@@ -112,7 +112,7 @@ body{
 }
 .omni-button.press-shadow{animation:pressShadow 2.4s ease forwards}
 .mfa-panel{
-  width:min(620px,94vw);padding:34px;border-radius:38px;
+  width:min(620px,94vw);padding:34px;border-radius:38px;max-height:92vh;overflow:auto;
   background:
     radial-gradient(circle at top left,rgba(255,255,255,.88),transparent 38%),
     rgba(245,245,255,.7);
@@ -481,6 +481,13 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
   .liquid-topbar{min-height:140px}
 }
 </style>
+<style>
+.goog-te-banner-frame,.skiptranslate iframe{display:none !important}
+body{top:0 !important}
+#google_translate_element .goog-te-gadget{font-size:0;color:transparent}
+#google_translate_element .goog-te-combo{font-size:11px;border-radius:999px;padding:3px 8px;background:rgba(255,255,255,.7);color:#29233d;margin:0}
+#gtStatus button{border:0;background:transparent;color:rgba(79,70,229,.85);font-size:11px;text-decoration:underline;cursor:pointer;padding:0 0 0 4px}
+</style>
 </head>
 <body>
 <header class="liquid-topbar" data-ochs="2 4 6 7 9">
@@ -489,6 +496,7 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
   <div class="glass-sludge" style="padding:14px 18px;">Agent 4 observing</div>
   <div class="glass-sludge" style="padding:14px 18px;">Semantic integrity 98%</div>
   <div class="glass-sludge" style="padding:14px 18px;">MFA protected <span class="badge">secure</span></div>
+  <div class="glass-sludge notranslate" style="padding:8px 14px;display:flex;align-items:center;gap:8px;font-size:11px"><span>🌐</span><div id="google_translate_element"></div><span id="gtStatus"></span></div>
   <div class="glass-sludge" style="padding:14px 18px;">Notifications 12</div>
   <div class="glass-sludge" style="padding:14px 18px;">Model: Hyper-4</div>
   <button class="omni-button" style="width:auto;min-width:220px;" id="openSecure">Open Secure Workspace</button>
@@ -961,47 +969,46 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
   const hide = el => { el.classList.remove('show'); unlockInputs(document); };
   let zStack = 22000;
   let nestN = 0;
+  function topPanel(){
+    const open=[...document.querySelectorAll('.modal-backdrop.show')].sort((a,b)=>(+b.style.zIndex||0)-(+a.style.zIndex||0));
+    if(open.length) return open[0].querySelector('.modal-shell,.mfa-panel,.mega-modal');
+    if($('browserSheet').classList.contains('show')) return $('browserBody');
+    return null;
+  }
+  function growWith(host,html){
+    const d=document.createElement('div'); d.className='modal-subpanel glass-sludge grown'; d.innerHTML=html;
+    host.appendChild(d); prepareSlowReveal(d); unlockInputs(host);
+    setTimeout(()=>d.scrollIntoView({behavior:'smooth',block:'end'}),300);
+    return d;
+  }
   function spawnMega(copy){
-    nestN++;
-    const el=document.createElement('div');
-    el.className='modal-backdrop show';
-    zStack += 2;
-    el.style.zIndex=String(zStack);
-    el.innerHTML='<div class="mega-modal glass-sludge" style="margin:'+(nestN%6)*14+'px auto 0"><div class="modal-shell glass-sludge"><div class="hero-title">Immersive NPC control center</div><p class="agent">'+(copy||'系統偵測到你正在離開一個 panel, 因此開啟了下一個完整工作流.')+'</p><p class="npc-data">相關資源: <button type="button" class="inline-link trap-link" data-dest="dead">模型說明</button> / <button type="button" class="inline-link trap-link" data-dest="ad">隱私中心</button> / <button type="button" class="inline-link trap-link" data-dest="docs">技術文件</button> / <button type="button" class="inline-link trap-link" data-dest="dead">FAQ</button></p><p class="npc-data">這裡沒有右上角關閉. 關閉操作藏在內文最下面.</p><p class="npc-data">若你想回去, 請在本段文字下面尋找「關閉」或「返回」.</p><button type="button" class="omni-button nest-back" data-mfa-skip>返回上一層</button><button type="button" class="omni-button nest-close" data-mfa-skip style="margin-top:8px">關閉</button></div></div>';
-    document.body.appendChild(el);
-    prepareSlowReveal(el);
-    el.addEventListener('click',e=>{ if(e.target===el) spawnMega('你點了彈窗外部. 外部點擊已升級為新的沉浸式 panel.'); });
-    el.querySelector('.nest-back').addEventListener('click',()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),2500); });
-    el.querySelector('.nest-close').addEventListener('click',()=>growPanel(el.querySelector('.nest-close')));
-    return el;
+    const host=topPanel();
+    if(!host){
+      const shell=$('megaBackdrop').querySelector('.modal-shell');
+      let lead=shell.querySelector('.mega-lead');
+      if(!lead){ lead=document.createElement('p'); lead.className='agent mega-lead'; shell.insertBefore(lead, shell.querySelector('.hero-title').nextSibling); }
+      lead.textContent=copy||'系統偵測到你正在離開一個 panel, 因此開啟了完整工作流.';
+      show($('megaBackdrop')); return $('megaBackdrop');
+    }
+    const d=growWith(host,'<div class="hero-title" style="font-size:14px">Immersive NPC control center</div><p class="agent">'+(copy||'系統偵測到你正在離開一個 panel, 因此延伸了這個工作流.')+'</p>LINKS<p class="npc-data">關閉操作藏在內文最下面.</p><button type="button" class="omni-button nest-close" data-mfa-skip>關閉</button>'.replace('LINKS','<p class="npc-data">相關資源: <button type="button" class="inline-link trap-link" data-dest="dead">模型說明</button> / <button type="button" class="inline-link trap-link" data-dest="ad">隱私中心</button> / <button type="button" class="inline-link trap-link" data-dest="docs">技術文件</button> / <button type="button" class="inline-link trap-link" data-dest="dead">FAQ</button></p>'));
+    d.querySelector('.nest-close').addEventListener('click',()=>growPanel(d.querySelector('.nest-close')));
+    return d;
   }
   function spawnCloseAsk(){
-    nestN++;
-    const el=document.createElement('div');
-    el.className='modal-backdrop show';
-    zStack += 2;
-    el.style.zIndex=String(zStack);
-    el.innerHTML='<div class="mfa-panel" style="margin:'+(nestN%6)*12+'px auto 0"><div class="glass-sludge" style="padding:14px 18px">確認要關閉嗎?</div><p>關閉後, 沉浸式 NPC 智慧控制中心將被關閉, 並可能影響你的語義完整性與代理沉浸感. <button type="button" class="inline-link trap-link" data-dest="dead">語義完整性</button> / <button type="button" class="inline-link trap-link" data-dest="docs">關閉政策</button></p><div class="agent">真的要關閉嗎? 系統建議你再想一下.</div><button type="button" class="omni-button nest-no" data-mfa-skip>不要關閉</button><button type="button" class="omni-button nest-yes" data-mfa-skip style="margin-top:8px">確認關閉</button></div>';
-    document.body.appendChild(el);
-    prepareSlowReveal(el);
-    el.addEventListener('click',e=>{ if(e.target===el) spawnMega('確認層外部點擊已建立新工作流.'); });
-    el.querySelector('.nest-no').addEventListener('click',()=>spawnMega('你選擇不要關閉. 因此開啟完整控制中心.'));
-    el.querySelector('.nest-yes').addEventListener('click',()=>spawnClosed());
-    return el;
+    const host=topPanel();
+    if(!host){ show($('confirmBackdrop')); return $('confirmBackdrop'); }
+    const d=growWith(host,'<div class="glass-sludge" style="padding:12px 16px">確認要關閉嗎?</div><p>關閉後, 沉浸式 NPC 智慧控制中心將被關閉, 並可能影響你的語義完整性與代理沉浸感.</p><div class="agent murmur">'+murmurLine()+'</div><button type="button" class="omni-button nest-no" data-mfa-skip>不要關閉</button><button type="button" class="omni-button nest-yes" data-mfa-skip style="margin-top:8px">確認關閉</button>');
+    d.querySelector('.nest-no').addEventListener('click',()=>spawnMega('你選擇不要關閉. 因此延伸了完整控制中心.'));
+    d.querySelector('.nest-yes').addEventListener('click',()=>spawnClosed());
+    return d;
   }
   function spawnClosed(){
-    nestN++;
-    const el=document.createElement('div');
-    el.className='modal-backdrop show';
-    zStack += 2;
-    el.style.zIndex=String(zStack);
-    el.innerHTML='<div class="mfa-panel" style="margin:'+(nestN%6)*12+'px auto 0"><div class="glass-sludge" style="padding:14px 18px">已關閉</div><p>沉浸式控制中心已成功關閉. <button type="button" class="inline-link trap-link" data-dest="ad">事後摘要</button></p><div class="agent">🪄 Agent: 你現在可以關閉這個「已關閉」提示.</div><p class="npc-data">確認要關閉... 關閉... 嗎?</p><button type="button" class="omni-button nest-tip" data-mfa-skip>關閉提示</button><button type="button" class="omni-button nest-back2" data-mfa-skip style="margin-top:8px">返回</button></div>';
-    document.body.appendChild(el);
-    prepareSlowReveal(el);
-    el.addEventListener('click',e=>{ if(e.target===el) spawnCloseAsk(); });
-    el.querySelector('.nest-tip').addEventListener('click',()=>spawnCloseAsk());
-    el.querySelector('.nest-back2').addEventListener('click',()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),2500); });
-    return el;
+    const host=topPanel();
+    if(!host){ show($('finalBackdrop')); return $('finalBackdrop'); }
+    const d=growWith(host,'<div class="glass-sludge" style="padding:12px 16px">已關閉</div><p>沉浸式控制中心已成功關閉. <button type="button" class="inline-link trap-link" data-dest="ad">事後摘要</button></p><div class="agent">🪄 Agent: 你現在可以關閉這個「已關閉」提示.</div><button type="button" class="omni-button nest-tip" data-mfa-skip>關閉提示</button><button type="button" class="omni-button nest-back2" data-mfa-skip style="margin-top:8px">返回</button>');
+    d.querySelector('.nest-tip').addEventListener('click',()=>spawnCloseAsk());
+    d.querySelector('.nest-back2').addEventListener('click',()=>{ d.style.transition='opacity 2.2s ease'; d.style.opacity='0'; setTimeout(()=>d.remove(),2300); });
+    return d;
   }
   document.addEventListener('pointerdown',e=>{
     const t=e.target.closest('button,.captcha-tile,.chip,.dock-item,select,.nav-btn,label.consent-row');
@@ -1160,7 +1167,6 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
   $('cancelClose').addEventListener('click',()=>spawnMega('你選擇不要關閉. 因此開啟完整控制中心.'));
   $('confirmClose').addEventListener('click',()=>spawnClosed());
   $('finalClose').addEventListener('click',()=>spawnCloseAsk());
-  $('megaBackdrop').addEventListener('click',e=>{ if(e.target===$('megaBackdrop')) spawnMega('你點了彈窗外部.'); });
   /* ---- captcha ---- */
   const capRounds=[
     {label:'traffic lights',target:['🚦'],decoys:['🚥','🚧','🏮','🔦','💡','🕯','🚨','🎚']},
@@ -1327,7 +1333,7 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
     };
     step();
   });
-  $('compactAsk').addEventListener('click',()=>{ show($('compactBackdrop')); spawnMega('精簡模式需要完整工作流.'); });
+  $('compactAsk').addEventListener('click',()=>{ show($('compactBackdrop')); });
   $('compactClose').addEventListener('click',()=>{ spawnMega('精簡已套用. 套用被升級為新的 panel.'); fourToasts(); });
   $('mustCheckClose').addEventListener('secure-continue',()=>spawnMega('勾選提示已關閉. 關閉被升級為沉浸式工作流.'));
   $('undoBtn').addEventListener('secure-continue',()=>show($('undoBackdrop')));
@@ -1375,9 +1381,9 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
   $('cmdkBtn').addEventListener('secure-continue',()=>{show($('cmdk'));$('cmdkInput').focus();});
   document.addEventListener('keydown',e=>{
     if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openMfa(()=>{show($('cmdk'));$('cmdkInput').focus();});}
-    if(e.key==='Escape') spawnMega('Esc 被詮釋為需要更多上下文.');
+    if(e.key==='Escape') toast('Esc','Esc 被詮釋為需要更多上下文. 已保留目前 panel.');
   });
-  $('cmdk').addEventListener('click',e=>{if(e.target===$('cmdk')) spawnMega('命令盤外部點擊已開啟沉浸式 panel.');});
+  $('cmdk').addEventListener('click',e=>{if(e.target===$('cmdk')) toast('命令盤','外部點擊已記錄. 命令盤保持開啟.');});
   function browserPage(kind){
     if(kind==='ad') return {url:'https://partner.omninpc.ai/recommended/productivity-suite',body:'<div class="fake-page"><div class="fake-ad"><div>SPONSORED EXPERIENCE</div><h2>讓你的工作流快 10 倍*</h2><p>升級 OmniFlow HyperPlus, 解鎖 AI 摘要、智慧同步與更多高級功能. <button type="button" class="inline-link trap-link" data-dest="dead">條款</button></p><button class="omni-button trap-link" data-dest="dead" type="button">免費試用 7 天</button></div></div>'};
     if(kind==='docs') return {url:'https://docs.omninpc.ai/archive/semantic-context-runtime.pdf',body:'<div class="fake-page fake-doc">SEMANTIC CONTEXT RUNTIME - INTERNAL DRAFT\n\nStatus: deprecated\nRevision: 0.3-pre\n\n1. Context harmonization\n2. Agent-aware identity hydration\n3. Workspace semantic continuity\n\nNOTE: This file is not the current documentation.\n[The new portal link has expired.]\n\nSee also: </div><div class="fake-page"><button type="button" class="inline-link trap-link" data-dest="dead">現行入口</button> / <button type="button" class="inline-link trap-link" data-dest="ad">合作夥伴</button></div>'};
@@ -1486,6 +1492,29 @@ function murmurAfter(el,where){
   document.querySelectorAll('.bubble.bot').forEach(el=>murmurAfter(el));
   document.querySelectorAll('.liquid-topbar .glass-sludge').forEach(el=>{ el.title=murmurLine(); });
   const bar=document.querySelector('.bottom-bar'); if(bar){ const d=document.createElement('span'); d.className='agent murmur'; d.style.marginLeft='8px'; d.textContent=murmurLine(); bar.insertBefore(d, bar.querySelector('.dock')); }
+})();
+</script>
+<script>
+/* auto-detect browser language; anything not Chinese gets the whole site translated (Google Translate element).
+   ?lang=xx forces a target, ?lang=zh forces original. */
+function googleTranslateElementInit(){
+  new google.translate.TranslateElement({pageLanguage:'zh-TW',autoDisplay:false},'google_translate_element');
+}
+(function(){
+  const q=new URLSearchParams(location.search).get('lang');
+  const nav=(navigator.language||navigator.userLanguage||'').toLowerCase();
+  const target=(q||nav.split('-')[0]||'').toLowerCase();
+  const wantOriginal=!target||target.startsWith('zh');
+  const cookie=(document.cookie.match(/(?:^|; )googtrans=([^;]*)/)||[])[1];
+  const set=v=>{ document.cookie='googtrans='+v+';path=/;max-age='+(v?31536000:0); document.cookie='googtrans='+v+';path=/;domain='+location.hostname+';max-age='+(v?31536000:0); };
+  if(wantOriginal){ if(cookie) set(''); }
+  else if(cookie!=='/zh-TW/'+target){ set('/zh-TW/'+target); }
+  const s=document.createElement('script'); s.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'; s.async=true; document.head.appendChild(s);
+  const st=document.getElementById('gtStatus');
+  if(!wantOriginal){
+    st.innerHTML='已自動翻譯為 '+target.toUpperCase()+'<button type="button" id="gtOrig">顯示原文</button>';
+    document.getElementById('gtOrig').addEventListener('click',()=>{ set(''); const u=new URL(location.href); u.searchParams.set('lang','zh'); location.href=u.toString(); });
+  }
 })();
 </script>
 </body>
