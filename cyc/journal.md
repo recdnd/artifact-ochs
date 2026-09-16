@@ -1,7 +1,7 @@
 # OCHS - journal
 
 Updated: 2026-09-16
-Entries: 1
+Entries: 2
 Split: no
 
 ---
@@ -14,6 +14,17 @@ Split: no
 ---
 
 ## 紀錄 (倒序, 最新在上)
+
+### 2026-09-16 -- 整合版, 加慢動畫
+
+**Why**
+主筆: 不需要再 v6 / v7, 做一個整合版, 並且加大各種動畫的緩慢噁心力度.
+
+**What**
+只留 `index.html`. 刪掉 ugly_v5 / v6 / v7. 背景漂 / 頂欄液移 / 玻璃呼吸 / 標題爬色 / modal 2.4-2.8s 糊進 / toast 與鈕 stagger / 進度條與內建瀏覽器再放慢.
+
+**Result**
+正本一頁.
 
 ### 2026-09-16 -- 立項 + GH Pages
 
