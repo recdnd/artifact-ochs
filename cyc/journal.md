@@ -28,7 +28,7 @@ Split: no
 3. 拔掉 Google Translate, 換成 231 條手翻 `I18N_EN` + MutationObserver. 中文瀏覽器 -> 中文, 其他 -> 英文; `?lang=` 強制, 🌐 切換會記住.
 
 **Result**
-051d1d9 (兩招) / 英文版那一筆, 皆已推. headless Chrome 實測: 英文模式跑完多個流程畫面剩 0 條中文.
+051d1d9 (兩招) / 26302f2 (英文版), 皆已推. headless Chrome 實測: 英文模式跑完多個流程畫面剩 0 條中文.
 
 ### 2026-09-17 -- 不疊 modal, 全站翻譯, AI upsell 與一串陷阱
 
