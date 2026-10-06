@@ -97,7 +97,7 @@ body{
   color:#29233d;font-weight:800;font-size:15px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 10px 28px rgba(50,45,90,.14);
   cursor:pointer;
-  transition:transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,background 1.8s ease;
+  transition:scale 1.5s ease,transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,background 1.8s ease;
   animation:fadeSludge 3.4s ease both;
 }
 .omni-button:hover{
@@ -297,11 +297,16 @@ body.ochs-on [data-ochs]::after{
 @keyframes ringSpin{to{--ring-angle:360deg}}
 @property --ring-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
 button,input,select,textarea,.captcha-tile,.chip,.dock-item,.badge,.nav-btn{
-  transition:transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,background 1.8s ease,border-color 1.8s ease,opacity 1.2s ease;
+  transition:scale 1.5s ease,transform 1.6s cubic-bezier(.16,.8,.2,1),box-shadow 1.9s ease,background 1.8s ease,border-color 1.8s ease,opacity 1.2s ease;
   position:relative;overflow:hidden;
 }
 button:hover,.chip:hover,.dock-item:hover,.nav-btn:hover{transform:translateY(-2px) scale(1.012);box-shadow:0 26px 60px rgba(80,60,160,.22),0 0 0 8px rgba(139,92,246,.08)}
 button:active,.captcha-tile:active{transform:scale(.97) translateY(1px);transition-duration:.9s}
+ /* 電費站按鈕: hover 1.5s 變大, 亮綠從左邊長滿; 離開再 1.5s 縮回 */
+button:not(.tiny-x){isolation:isolate}
+button:not(.tiny-x):hover{scale:1.12}
+.hover-fill{position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;background:#2bea5c;transform:scaleX(0);transform-origin:left center;transition:transform 1.5s ease}
+button:hover>.hover-fill{transform:scaleX(1)}
 .silk-pressing{animation:silkPress 2.2s cubic-bezier(.16,.8,.2,1) both !important}
 .silk-ripple{
   position:absolute;left:var(--rx,50%);top:var(--ry,50%);width:260%;aspect-ratio:1;border-radius:999px;pointer-events:none;
@@ -965,7 +970,7 @@ body{top:0 !important}
       setTimeout(()=>node.classList.add('revealed'), 900 + idx*520);
     });
   }
-  const show = el => { zStack += 2; el.style.zIndex = String(zStack); el.classList.add('show'); prepareSlowReveal(el); unlockInputs(el); };
+  const show = el => { zStack += 2; el.style.zIndex = String(zStack); el.classList.add('show'); prepareSlowReveal(el); unlockInputs(el); rollPanel(el); };
   const hide = el => { el.classList.remove('show'); unlockInputs(document); };
   let zStack = 22000;
   let nestN = 0;
@@ -1158,6 +1163,7 @@ body{top:0 !important}
     });
   });
   $('verifyMfa').addEventListener('click',()=>{
+    rollDown(); rollPanel($('mfaModal'));
     if(mfaValue()!==mfaCode){ clearMfa(); toast('Invalid code','Enter the 6-digit code.'); return; }
     dismissNotif(); hide($('mfaModal')); startCaptcha();
   });
@@ -1167,6 +1173,43 @@ body{top:0 !important}
   $('cancelClose').addEventListener('click',()=>spawnMega('你選擇不要關閉. 因此開啟完整控制中心.'));
   $('confirmClose').addEventListener('click',()=>spawnClosed());
   $('finalClose').addEventListener('click',()=>spawnCloseAsk());
+  /* ---- 全頁滾下來 (靈感: 主筆的電費網站): 每次載入 / 換頁 / 開窗 / 送出密碼, 先回頂端再慢慢滾到底; 頁面不夠長就整頁從上面降下來 ---- */
+  history.scrollRestoration='manual';
+  const rolls=new Map();
+  function rollDown(box){
+    const key=box||window, win=!box, token={};
+    rolls.set(key,token);
+    const max=()=>win?document.documentElement.scrollHeight-innerHeight:box.scrollHeight-box.clientHeight;
+    const set=y=>win?window.scrollTo(0,y):(box.scrollTop=y);
+    set(0);
+    const view=win?innerHeight:box.clientHeight;
+    const dur=Math.min(12000,Math.max(4200,max()/view*1600));
+    if(max()<view*.6){
+      const els=win?[...document.querySelectorAll('.shell,.bottom-bar')]:[...box.children];
+      els.forEach(el=>el.animate([{translate:'0 '+(-view*.7)+'px'},{translate:'0 0'}],{duration:dur,delay:700,easing:'cubic-bezier(.45,0,.55,1)',fill:'backwards'}));
+      return;
+    }
+    let t0=null;
+    const step=t=>{
+      if(rolls.get(key)!==token) return;
+      if(t0===null) t0=t;
+      const p=Math.min(1,(t-t0)/dur);
+      set(max()*(1-Math.cos(Math.PI*p))/2);
+      if(p<1) requestAnimationFrame(step);
+    };
+    setTimeout(()=>requestAnimationFrame(step),700);
+  }
+  function rollPanel(el){
+    const box=el&&(el.matches('.mfa-panel,.mega-modal')?el:el.querySelector('.mega-modal,.mfa-panel'));
+    if(box) rollDown(box);
+  }
+  window.addEventListener('load',()=>rollDown());
+  document.addEventListener('pointerover',e=>{
+    const b=e.target.closest&&e.target.closest('button:not(.tiny-x)');
+    if(!b||b.querySelector(':scope>.hover-fill')) return;
+    const f=document.createElement('span'); f.className='hover-fill'; f.setAttribute('aria-hidden','true');
+    f.style.transform='scaleX(0)'; b.prepend(f); f.offsetWidth; f.style.transform='';
+  },true);
   /* ---- captcha ---- */
   const capRounds=[
     {label:'traffic lights',target:['🚦'],decoys:['🚥','🚧','🏮','🔦','💡','🕯','🚨','🎚']},
@@ -1393,6 +1436,7 @@ body{top:0 !important}
     const pg=browserPage(kind);
     $('browserAddress').textContent=pg.url;
     $('browserBody').innerHTML=pg.body;
+    rollDown($('browserBody'));
     const more=$('browserBody').querySelector('.trap-more');
     if(more) more.addEventListener('click',()=>{
       $('browserAddress').textContent='https://loading.omninpc.ai/redirect?...';
