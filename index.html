@@ -487,10 +487,6 @@ input.input-locked,textarea.input-locked{caret-color:transparent;background:rgba
 }
 </style>
 <style>
-.goog-te-banner-frame,.skiptranslate iframe{display:none !important}
-body{top:0 !important}
-#google_translate_element .goog-te-gadget{font-size:0;color:transparent}
-#google_translate_element .goog-te-combo{font-size:11px;border-radius:999px;padding:3px 8px;background:rgba(255,255,255,.7);color:#29233d;margin:0}
 #gtStatus button{border:0;background:transparent;color:rgba(79,70,229,.85);font-size:11px;text-decoration:underline;cursor:pointer;padding:0 0 0 4px}
 </style>
 </head>
@@ -501,7 +497,7 @@ body{top:0 !important}
   <div class="glass-sludge" style="padding:14px 18px;">Agent 4 observing</div>
   <div class="glass-sludge" style="padding:14px 18px;">Semantic integrity 98%</div>
   <div class="glass-sludge" style="padding:14px 18px;">MFA protected <span class="badge">secure</span></div>
-  <div class="glass-sludge notranslate" style="padding:8px 14px;display:flex;align-items:center;gap:8px;font-size:11px"><span>🌐</span><div id="google_translate_element"></div><span id="gtStatus"></span></div>
+  <div class="glass-sludge notranslate" style="padding:8px 14px;display:flex;align-items:center;gap:8px;font-size:11px"><span>🌐</span><span id="gtStatus" data-i18n-skip></span></div>
   <div class="glass-sludge" style="padding:14px 18px;">Notifications 12</div>
   <div class="glass-sludge" style="padding:14px 18px;">Model: Hyper-4</div>
   <button class="omni-button" style="width:auto;min-width:220px;" id="openSecure">Open Secure Workspace</button>
@@ -959,9 +955,295 @@ body{top:0 !important}
 </div>
 
 <script>
+/* 真英文版: 中文正本 + 手翻英文字典. 瀏覽器語言不是中文就整站切英文 (含所有 agent 小話 / toast / 橫幅 / alert).
+   ?lang=en / ?lang=zh 強制, 點 🌐 那顆切換會記住. 動態長出來的節點由 MutationObserver 接著翻. */
+const I18N_EN={
+"HyperStudio infers structured fields from natural language so your team can ship narrative systems faster. 相關資源:": "HyperStudio infers structured fields from natural language so your team can ship narrative systems faster. Related resources:",
+"模型說明": "Model notes",
+"隱私中心": "Privacy Center",
+"技術文件": "Technical docs",
+"工作流最佳實踐": "Workflow best practices",
+"輔助句: 這句話其實完全可以不存在, 但我們認為任何標題下面都應該再解釋一次.": "Helper text: this sentence could honestly not exist, but we believe every heading deserves to be explained one more time.",
+"🪄 一個用來把一句話膨脹成 17 個欄位, 6 個 panel, 3 層提示與一個不必要工作流的現代 LLM 網站.": "🪄 A modern LLM website that inflates one sentence into 17 fields, 6 panels, 3 layers of hints and one unnecessary workflow.",
+"🪄 Agent 認為這個角色具有高敘事張力, 並已預先推斷 17 個欄位. 見": "🪄 Agent believes this character has high narrative tension and has pre-inferred 17 fields. See",
+"推斷規範": "Inference guidelines",
+"與": "and",
+"欄位本體論": "Field ontology",
+"🪄 Agent 已根據你尚未輸入的需求, 預先推斷了 12 個欄位.": "🪄 Agent has pre-inferred 12 fields based on requirements you have not typed yet.",
+"幫我建立一個神父: 這個 NPC 為錢說話. 實力很強.": "Create a priest for me: this NPC talks for money. Very strong.",
+"神父": "Priest",
+"🪄 已替你優化表達": "🪄 We optimized your wording for you",
+"實力強度": "Strength level",
+"弱": "Weak",
+"中": "Medium",
+"強": "Strong",
+"脈絡依賴": "Context-dependent",
+"由 Agent 動態決定": "Dynamically decided by Agent",
+"暫不定義": "Undefined for now",
+"⚠ 尚未完成": "⚠ Not yet complete",
+"商人": "Merchant",
+"🪄 因為「實力很強」像結構化訊息, 所以我們自動建立了 strength enum, 信任度, 敘事稅率與精神光環色.": "🪄 Because \"very strong\" looked like structured data, we automatically created a strength enum, a trust index, a narrative tax rate and a spiritual aura color.",
+"合作夥伴": "Partners",
+"我已閱讀並理解 AI 可能會擅自擴張欄位與工作流 (": "I have read and understood that AI may expand fields and workflows on its own (",
+"條款": "Terms",
+"隱私": "Privacy",
+"允許 Agent 學習此次 Undo": "Allow Agent to learn from this Undo",
+"減少干擾": "Reduce distractions",
+"實力": "Strength",
+"呈現層說明": "Presentation layer notes",
+"席位方案": "Seat plans",
+"邀請政策": "Invite policy",
+"師匠 1.68 unpulled / 小精靈 1 unpulled / 教導主任 2 unpulled": "Master 1.68 unpulled / Little Sprite 1 unpulled / Head of Discipline 2 unpulled",
+"尺的怪處": "Ruler quirks",
+"這一格填什麼": "What goes in this field",
+"🪄 整個可操作工作台被當成 help 折進來了, 所以現在只能看不能用.": "🪄 The entire usable workspace got folded in as help, so now you can look at it but not use it.",
+"🪄 Agent 解讀: 你目前正在使用一個沒有必要存在的狀態 panel.": "🪄 Agent interpretation: you are currently using a status panel that does not need to exist.",
+"相關資源:": "Related resources:",
+"有更新的版本在做同一件事": "A newer version does the same thing",
+"版本差異": "Version diff",
+"; 只留著查": "; kept for reference only",
+"最佳實踐": "Best practices",
+", 不要改.": ", do not edit.",
+"grounding 說明": "Grounding notes",
+"Agent 政策": "Agent policy",
+"狀態定義": "State definitions",
+"觀測日誌": "Observation log",
+"🪄 Agent: 我們把「取消」做得跟「繼續」一樣大, 以示公平.": "🪄 Agent: we made \"Cancel\" exactly as big as \"Continue\", in the interest of fairness.",
+"為了繼續執行此一般操作, 請輸入我們剛剛要求你輸入的 6 位驗證碼.": "To continue with this ordinary action, please enter the 6-digit verification code we just asked you to enter.",
+"你的身份已成功驗證. 你現在可以繼續執行剛才原本已經要執行的操作.": "Your identity has been verified. You may now continue with the action you were already about to do.",
+"🪄 你只是點了一個欄位, 但系統認為你需要一個 820px 寬的大型工作流 panel.": "🪄 You only clicked a field, but the system decided you need an 820px-wide workflow panel.",
+"工作流文件": "Workflow docs",
+"中斷影響": "Interruption impact",
+"🪄 正在把一個普通欄位重新詮釋成多階段 AI 工作流.": "🪄 Reinterpreting an ordinary field as a multi-stage AI workflow.",
+"運行提示": "Runtime hints",
+"這個 panel 的資訊主要用來證明系統很複雜.": "The information in this panel mainly exists to prove the system is complicated.",
+"🪄 Agent: 如果你不理解這些欄位, 表示自動化正在正常運作.": "🪄 Agent: if you do not understand these fields, automation is working as intended.",
+"這裡沒有右上角關閉. 關閉操作藏在內文最下面.": "There is no close button in the top right. Closing is hidden at the very bottom of the text.",
+"若你想回到原本只是想輸入一個名字的畫面, 請在本段文字下面尋找「關閉」按鈕.": "If you would like to return to the screen where you only wanted to type a name, please look for the \"Close\" button below this paragraph.",
+"關閉": "Close",
+"確認要關閉嗎?": "Are you sure you want to close?",
+"關閉後, 沉浸式 NPC 智慧控制中心將被關閉, 並可能影響你的語義完整性與代理沉浸感.": "Closing will shut down the Immersive NPC Intelligence Control Center and may affect your semantic integrity and agentic immersion.",
+"語義完整性": "Semantic integrity",
+"關閉政策": "Closing policy",
+"真的要關閉嗎? 系統建議你再想一下.": "Do you really want to close? The system recommends thinking it over.",
+"🪄 關閉後, 你的代理沉浸感將無法恢復. 我們也不確定那是什麼.": "🪄 Once closed, your agentic immersion cannot be restored. We are also not sure what that is.",
+"不要關閉": "Don't close",
+"確認關閉": "Confirm close",
+"已關閉": "Closed",
+"沉浸式控制中心已成功關閉.": "The Immersive Control Center has been closed successfully.",
+"🪄 Agent: 你現在可以關閉這個「已關閉」提示.": "🪄 Agent: you may now close this \"Closed\" notice.",
+"確認要關閉... 關閉... 嗎?": "Are you sure you want to close... close... ?",
+"關閉提示": "Close notice",
+"你必須勾選才能點擊按鈕": "You must check the box to click the button",
+"雖然你剛才已經成功點擊了按鈕, 但系統要求你先勾選按鈕下方的小勾選框.": "Although you just clicked the button successfully, the system requires you to first check the small checkbox below the button.",
+"🪄 Agent: 請先完成確認, 再重新點一次你剛才已經點過的按鈕.": "🪄 Agent: please complete the confirmation, then click the button you already clicked again.",
+"為了改善 Agent 品質, 請選擇撤銷原因": "To improve Agent quality, please choose an undo reason",
+"🪄 為了改善 Agent 品質, 請先解釋你為什麼要 Undo. 你的解釋會被用來改善這個要你解釋的視窗.": "🪄 To improve Agent quality, please explain why you want to Undo. Your explanation will be used to improve this window that asks you to explain.",
+"請選擇": "Please select",
+"結果不理想": "Result not ideal",
+"意圖改變": "Intent changed",
+"其他": "Other",
+"請至少輸入 20 字": "Please enter at least 20 characters",
+"🪄 Agent: 我們注意到彈窗可能打斷您的工作流. 是否啟用「減少干擾」?": "🪄 Agent: we noticed pop-ups may interrupt your workflow. Enable \"Reduce distractions\"?",
+"減少干擾設定": "Reduce distractions settings",
+"🪄 你要求減少干擾, 因此我們打開了一個大型 modal 來設定減少干擾.": "🪄 You asked for fewer distractions, so we opened a large modal to configure fewer distractions.",
+"干擾強度": "Distraction intensity",
+"是否顯示「已減少干擾」提示": "Show the \"Distractions reduced\" notice",
+"顯示": "Show",
+"強烈顯示": "Show prominently",
+"啟用": "Enable",
+"你是想修改名稱、重新定義身份, 還是建立新的語義實體?": "Do you want to rename it, redefine its identity, or create a new semantic entity?",
+"修改名稱": "Rename",
+"重新定義身份": "Redefine identity",
+"建立新的語義實體": "Create new semantic entity",
+"已自動補全 14 個欄位. 頁面資訊似乎較多, 是否啟用 AI 精簡模式?": "14 fields were auto-completed. This page seems a bit busy. Enable AI Compact Mode?",
+"保存已增強的實體": "Save enhanced entity",
+"啟用精簡": "Enable Compact",
+"精簡模式需要一個更大的工作流, 才能安全地隱藏剛才新增的 14 個欄位.": "Compact Mode requires a larger workflow to safely hide the 14 fields that were just added.",
+"商業人格": "Business persona",
+"請輸入 NPC 名稱以確認刪除": "Type the NPC name to confirm deletion",
+"你確定這不是暫時性的決定嗎?": "Are you sure this isn't a temporary decision?",
+"理解影響並繼續": "I understand the impact, continue",
+"🪄 Agent 即時解讀": "🪄 Agent live interpretation",
+"你目前正接近一個欄位. 系統已推斷你可能想修改, 重定義或重新建模這個實體.": "You are approaching a field. The system has inferred that you may want to edit, redefine or remodel this entity.",
+"🪄 這張卡會在你離開後 1.15 秒才消失, 以確保你有時間後悔.": "🪄 This card disappears 1.15 seconds after you leave, so you have time to regret.",
+"稍後": "Later",
+"你的工作區已支援 AI. 這個 panel 用來提醒你這件事.": "Your workspace now supports AI. This panel exists to remind you of that.",
+"充值 · 解鎖更多 AI": "Top up · Unlock more AI",
+"嗨! 我是你的 AI. 問我任何事, 每則訊息消耗 1 credit.": "Hi! I'm your AI. Ask me anything. Each message costs 1 credit.",
+"問 AI...": "Ask AI...",
+"送出": "Send",
+"(高信任敘事角色)": " (High-Trust Narrative Character)",
+"系統偵測到你正在離開一個 panel, 因此開啟了完整工作流.": "The system detected that you are leaving a panel, so it opened the full workflow.",
+"系統偵測到你正在離開一個 panel, 因此延伸了這個工作流.": "The system detected that you are leaving a panel, so it extended this workflow.",
+"關閉操作藏在內文最下面.": "Closing is hidden at the very bottom of the text.",
+"你選擇不要關閉. 因此延伸了完整控制中心.": "You chose not to close. So the full control center has been extended.",
+"事後摘要": "Post-close summary",
+"返回": "Back",
+"神父 (已優化)": "Priest (optimized)",
+"神父 - 為錢說話": "Priest - talks for money",
+"建議: 使用上次的值": "Suggestion: use last value",
+"從剪貼簿貼上 (推薦)": "Paste from clipboard (recommended)",
+"Agent 建議此欄留空": "Agent suggests leaving this field empty",
+"關閉請求已收到. 為了保留上下文, 這個 panel 已延伸.": "Close request received. To preserve context, this panel has been extended.",
+"系統將「關閉」理解為「需要更多資訊」.": "The system understood \"close\" as \"needs more information\".",
+"以下是與你嘗試關閉相關的內容.": "Below is content related to your attempt to close.",
+"Agent 已附加一段建議, 以協助你之後再次嘗試關閉.": "Agent has attached a suggestion to help you try closing again later.",
+"此區塊由關閉動作自動產生, 無法關閉.": "This block was generated automatically by the close action and cannot be closed.",
+"備註 (選填)": "Notes (optional)",
+"你的 credits 已用完. 充值以繼續使用 AI.": "You are out of credits. Top up to keep using AI.",
+"你的 credits 已用完 (0 / 50). 充值以繼續.": "You are out of credits (0 / 50). Top up to continue.",
+"你的工作區已於背景更新. 無需操作.": "Your workspace was updated in the background. No action needed.",
+"提示: 此橫幅不包含任何資訊.": "Tip: this banner contains no information.",
+"Agent 注意到你已數秒未操作, 已為你保留上下文.": "Agent noticed you have been idle for a few seconds and has preserved your context.",
+"系統正在為你準備一個更好的體驗 (無預計時間).": "The system is preparing a better experience for you (no ETA).",
+"新功能: 橫幅. 你正在使用它.": "New feature: banners. You are using it.",
+"為了提升可靠性, 我們新增了此通知.": "To improve reliability, we added this notification.",
+"你的 session 仍然有效. 此訊息用於確認這一點.": "Your session is still valid. This message confirms that.",
+"Cookie 偏好已被記住, 但我們忘了是哪些.": "Your cookie preferences have been remembered, but we forgot which ones.",
+"已自動儲存你尚未輸入的內容.": "Auto-saved the content you have not typed yet.",
+"本橫幅由前一個橫幅觸發.": "This banner was triggered by the previous banner.",
+"我們更新了隱私政策. 內容與之前相同.": "We updated our Privacy Policy. The content is the same as before.",
+"你沒有錯過任何事. 這是一個提醒.": "You haven't missed anything. This is a reminder.",
+"Agent 建議: 繼續閒置以查看更多橫幅.": "Agent suggests: stay idle to see more banners.",
+"此區域保留給未來的重要訊息. 目前顯示這一句.": "This area is reserved for important future messages. For now it shows this sentence.",
+"(關閉)": "(Close)",
+"已保存": "Saved",
+"NPC 已保存.": "NPC saved.",
+"同步成功": "Sync complete",
+"工作區已同步.": "Workspace synced.",
+"Agent 已知悉": "Agent acknowledged",
+"Agent 已接收你的修改.": "Agent has received your edits.",
+"工作區狀態已更新": "Workspace status updated",
+"減少干擾模式已套用. 此提示用於確認你已減少干擾.": "Reduce distractions mode applied. This notice confirms that you have reduced distractions.",
+"已生成, 但未要求的欄位仍全部保留": "Generated, but all unrequested fields have been kept",
+"MFA 已取消. 取消被升級為沉浸式工作流.": "MFA cancelled. Cancelling has been upgraded to an immersive workflow.",
+"你選擇不要關閉. 因此開啟完整控制中心.": "You chose not to close. So the full control center has been opened.",
+"精簡已套用. 套用被升級為新的 panel.": "Compact applied. Applying has been upgraded to a new panel.",
+"勾選提示已關閉. 關閉被升級為沉浸式工作流.": "Checkbox notice closed. Closing has been upgraded to an immersive workflow.",
+"Undo 已取消. 取消被升級為完整控制中心.": "Undo cancelled. Cancelling has been upgraded to the full control center.",
+"請先選擇撤銷原因.": "Please choose an undo reason first.",
+"請至少輸入 20 字.": "Please enter at least 20 characters.",
+"Undo 已提交. 提交後仍需沉浸式確認.": "Undo submitted. Submission still requires immersive confirmation.",
+"已減少干擾. 減少干擾需要另一個大型 panel.": "Distractions reduced. Reducing distractions requires another large panel.",
+"已減少干擾": "Distractions reduced",
+"此提示用於確認你已減少干擾.": "This notice confirms that you have reduced distractions.",
+"交易倫理": "Trade ethics",
+"定價哲學": "Pricing philosophy",
+"商人 onboarding 完成. 完成被升級為沉浸式工作流.": "Merchant onboarding complete. Completion has been upgraded to an immersive workflow.",
+"刪除已取消. 取消需要完整控制中心.": "Deletion cancelled. Cancelling requires the full control center.",
+"你從 Trash 返回. 返回已開啟新的 panel.": "You returned from Trash. Returning has opened a new panel.",
+"刪除名稱確認已取消.": "Deletion name confirmation cancelled.",
+"請輸入 NPC 名稱.": "Please enter the NPC name.",
+"邀請已關閉. 關閉被升級為工作流.": "Invite closed. Closing has been upgraded to a workflow.",
+"Esc 被詮釋為需要更多上下文. 已保留目前 panel.": "Esc was interpreted as needing more context. The current panel has been kept.",
+"命令盤": "Command palette",
+"外部點擊已記錄. 命令盤保持開啟.": "Outside click recorded. The command palette stays open.",
+"讓你的工作流快 10 倍*": "Make your workflow 10x faster*",
+"升級 OmniFlow HyperPlus, 解鎖 AI 摘要、智慧同步與更多高級功能.": "Upgrade to OmniFlow HyperPlus to unlock AI summaries, smart sync and more premium features.",
+"免費試用 7 天": "Start 7-day free trial",
+"現行入口": "Current portal",
+"此頁面已移動或不存在": "This page has moved or does not exist",
+"你可以返回上一頁, 或繼續探索相關資源.": "You can go back to the previous page, or keep exploring related resources.",
+"探索相關資源": "Explore related resources",
+"正在開啟內建瀏覽器...": "Opening built-in browser...",
+"已關閉內建瀏覽器": "Built-in browser closed",
+"你已返回 OmniNPC 工作區.": "You have returned to the OmniNPC workspace.",
+"🪄 這個 panel 的資訊主要用來證明系統很複雜.": "🪄 The information in this panel mainly exists to prove the system is complicated.",
+"🪄 你目前正接近一個欄位. 系統已推斷你可能想修改, 重定義或重新建模這個實體.": "🪄 You are approaching a field. The system has inferred that you may want to edit, redefine or remodel this entity.",
+"🪄 輔助句: 這句話其實完全可以不存在, 但我們認為任何標題下面都應該再解釋一次.": "🪄 Helper text: this sentence could honestly not exist, but we believe every heading deserves to be explained one more time.",
+"🪄 減少干擾模式已套用. 此提示用於確認你已減少干擾.": "🪄 Reduce distractions mode applied. This notice confirms that you have reduced distractions.",
+"🪄 感謝你的回饋. Agent 將學習此次撤銷原因.": "🪄 Thank you for your feedback. Agent will learn from this undo reason.",
+"🪄 已生成, 但未要求的欄位仍全部保留.": "🪄 Generated, but all unrequested fields have been kept.",
+"🪄 這一格填什麼": "🪄 What goes in this field",
+"🪄 Agent 注意到你正在閱讀這行字. 已將「閱讀」記為一次互動.": "🪄 Agent noticed you are reading this line. \"Reading\" has been logged as an interaction.",
+"🪄 這個按鈕的功能已由 Agent 動態決定. 點下去才會知道.": "🪄 This button's function has been dynamically decided by Agent. You'll find out when you click it.",
+"🪄 Agent 已替你把這個欄位留空, 因為空白也是一種語義.": "🪄 Agent left this field empty for you, because emptiness is also a kind of semantics.",
+"🪄 系統偵測到滑鼠靜止 3 秒, 已推斷你在思考. 思考已同步至工作區.": "🪄 The system detected your mouse was still for 3 seconds and inferred you were thinking. Your thinking has been synced to the workspace.",
+"🪄 這一行是為了讓 panel 看起來更飽滿而存在的.": "🪄 This line exists to make the panel look fuller.",
+"🪄 Agent: 你沒有做錯什麼. 系統只是想再確認一次.": "🪄 Agent: you didn't do anything wrong. The system just wants to confirm one more time.",
+"🪄 此 chip 不可點擊, 但我們保留了 hover 效果以維持一致性.": "🪄 This chip is not clickable, but we kept the hover effect for consistency.",
+"🪄 Agent 已學習你剛才的猶豫.": "🪄 Agent has learned from your hesitation just now.",
+"🪄 這個標籤下面本來沒有說明, 所以我們加了這一句.": "🪄 This label originally had no description underneath, so we added this sentence.",
+"🪄 Agent 正在為這個按鈕生成第二個按鈕.": "🪄 Agent is generating a second button for this button.",
+"🪄 你目前的操作不需要任何操作. No action required.": "🪄 Your current action requires no action. No action required.",
+"🪄 這個數值是隨機的, 但 Agent 對它很有信心.": "🪄 This number is random, but Agent is very confident about it.",
+"🪄 Agent 已將本區塊標記為「重要」. 所有區塊都已標記為「重要」.": "🪄 Agent has marked this block as \"Important\". All blocks have been marked as \"Important\".",
+"🪄 系統剛剛替你選了一個選項. 你可以改, 但系統會再改回來.": "🪄 The system just picked an option for you. You can change it, but the system will change it back.",
+"🪄 這句提示會在 1.9 秒後慢慢浮現, 以營造思考感.": "🪄 This hint will slowly fade in after 1.9 seconds, to create a sense of thinking.",
+"🪄 Agent 建議: 先不要動任何東西.": "🪄 Agent suggests: don't touch anything for now.",
+"🪄 我們注意到你還沒有邀請團隊成員. 這件事已被記錄.": "🪄 We noticed you haven't invited any team members yet. This has been recorded.",
+"🪄 Agent: 本 panel 已針對你的情緒狀態進行最佳化. 我們並不知道你的情緒狀態.": "🪄 Agent: this panel has been optimized for your emotional state. We do not know your emotional state.",
+"🪄 這個 modal 的存在是為了讓你關閉它.": "🪄 This modal exists so that you can close it.",
+"🪄 Agent 已根據 0 筆資料生成 1 份洞察.": "🪄 Agent generated 1 insight from 0 data points.",
+"🪄 這裡原本是一個 tooltip, 後來長成了 panel.": "🪄 This used to be a tooltip. It grew into a panel.",
+"🪄 Agent 已將你的名字優化為你的名字.": "🪄 Agent has optimized your name into your name.",
+"🪄 你可以跳過這一步, 但跳過也是一步.": "🪄 You can skip this step, but skipping is also a step.",
+"🪄 Semantic integrity 目前 98%. 剩下 2% 是這句話.": "🪄 Semantic integrity is currently at 98%. The remaining 2% is this sentence.",
+"🪄 Agent 想確認: 你剛才是想按, 還是不小心按到? 兩種都已記錄.": "🪄 Agent would like to confirm: did you mean to press that, or was it an accident? Both have been recorded.",
+"🪄 這個側欄圖示沒有名字. Agent 認為名字會限制它的可能性.": "🪄 This sidebar icon has no name. Agent believes a name would limit its potential.",
+"🪄 本功能尚未實作, 但 UI 已經準備好了.": "🪄 This feature has not been implemented yet, but the UI is ready.",
+"🪄 Agent 已為這個空狀態生成一個更空的狀態.": "🪄 Agent has generated an even emptier state for this empty state.",
+"🪄 你剛才捲動了 40px. Agent 已將其解讀為「探索意圖」.": "🪄 You just scrolled 40px. Agent has interpreted this as \"exploration intent\".",
+"🪄 這個驗證碼是我們發給你的, 所以我們也知道答案. 但還是請你輸入.": "🪄 We sent you this verification code, so we also know the answer. But please enter it anyway.",
+"🪄 系統建議你再想一下. 系統本身沒有想.": "🪄 The system suggests you think it over. The system itself did not think.",
+"已自動翻譯為": "Auto-switched to",
+"顯示原文": "Show original"
+};
+const LANG=(()=>{
+  const q=(new URLSearchParams(location.search).get('lang')||'').toLowerCase();
+  let saved=''; try{ saved=localStorage.getItem('ochs-lang')||''; }catch(e){}
+  if(q){ const v=q.startsWith('zh')?'zh':'en'; try{ localStorage.setItem('ochs-lang',v); }catch(e){} return v; }
+  if(saved) return saved;
+  return (navigator.languages||[navigator.language||'']).some(l=>/^zh/i.test(l))?'zh':'en';
+})();
+const LANG_AUTO=!new URLSearchParams(location.search).get('lang');
+const I18N_CJK=/[\u3000-\u9fff\uff00-\uffef]/;
+const I18N_FRAG=Object.keys(I18N_EN).filter(k=>k.length>=3).sort((a,b)=>b.length-a.length);
+const I18N_MISS=new Set();
+function tr(s){
+  if(LANG!=='en'||typeof s!=='string'||!I18N_CJK.test(s)) return s;
+  const lead=s.match(/^\s*/)[0], trail=s.match(/\s*$/)[0], k=s.replace(/\s+/g,' ').trim();
+  let t=I18N_EN[k];
+  if(t===undefined){
+    t=k; for(const f of I18N_FRAG) if(t.includes(f)) t=t.split(f).join(I18N_EN[f].trim());
+    if(I18N_CJK.test(t)) I18N_MISS.add(k);
+  }
+  return lead+t+trail;
+}
+(function(){
+  if(LANG!=='en') return;
+  document.documentElement.lang='en';
+  const ATTRS=['title','placeholder','aria-label','data-ochs','value','alt'];
+  const skip=n=>{ const e=n.nodeType===1?n:n.parentElement; return !e||e.closest('script,style,[data-i18n-skip]'); };
+  const text=n=>{ if(skip(n)) return; const v=n.nodeValue, t=tr(v); if(t!==v) n.nodeValue=t; };
+  const attr=(el,a)=>{ const v=el.getAttribute(a); if(v==null) return; const t=tr(v); if(t!==v) el.setAttribute(a,t); };
+  const walk=root=>{
+    if(root.nodeType===3) return text(root);
+    if(root.nodeType!==1||skip(root)) return;
+    ATTRS.forEach(a=>attr(root,a));
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
+    for(let n=w.nextNode();n;n=w.nextNode()){ if(n.nodeType===3) text(n); else if(!skip(n)) ATTRS.forEach(a=>attr(n,a)); }
+  };
+  walk(document.body);
+  new MutationObserver(ms=>ms.forEach(m=>{
+    if(m.type==='childList') m.addedNodes.forEach(walk);
+    else if(m.type==='characterData') text(m.target);
+    else if(!skip(m.target)) attr(m.target,m.attributeName);
+  })).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTRS});
+  const _alert=window.alert.bind(window); window.alert=m=>_alert(tr(String(m)));
+})();
+(function(){
+  const st=document.getElementById('gtStatus'); if(!st) return;
+  const other=LANG==='en'?'zh':'en';
+  st.innerHTML=(LANG==='en'?(LANG_AUTO?'Auto-switched to English':'English'):'中文')+'<button type="button" id="langFlip">'+(other==='en'?'English':'中文')+'</button>';
+  document.getElementById('langFlip').addEventListener('click',()=>{ try{ localStorage.setItem('ochs-lang',other); }catch(e){} const u=new URL(location.href); u.searchParams.set('lang',other); location.href=u.toString(); });
+})();
+</script>
+<script>
 (function(){
   const $ = id => document.getElementById(id);
-  const SUF='(高信任敘事角色)';
+  const SUF=tr('(高信任敘事角色)');
   function prepareSlowReveal(el){
     const nodes=[...el.querySelectorAll('h2,p,label,button,.glass-sludge,.agent,.panel-title,.hero-title,.chip,.badge,strong')];
     nodes.forEach((node,idx)=>{
@@ -1302,8 +1584,8 @@ body{top:0 !important}
   function rewriteName(){
     const el=$('nameField');
     let v=el.value.replace(SUF,'');
-    if(v.indexOf('神父')!==-1){
-      el.value='神父'+SUF;
+    if(v.toLowerCase().indexOf(tr('神父').toLowerCase())!==-1){
+      el.value=tr('神父')+SUF;
       $('nameOpt').style.display='block';
     }
   }
@@ -1409,7 +1691,7 @@ body{top:0 !important}
   $('delNameCancel').addEventListener('secure-continue',()=>spawnMega('刪除名稱確認已取消.'));
   $('delNameNext').addEventListener('secure-continue',()=>{
     const v=$('delNameInput').value.trim();
-    if(v!=='神父' && v!=='神父'+SUF){alert('請輸入 NPC 名稱.');return;}
+    if(v!==tr('神父') && v!==tr('神父')+SUF){alert('請輸入 NPC 名稱.');return;}
     $('entityState').textContent='Soft-deleted · recoverable 30d';
     spawnClosed();
     fourToasts();
@@ -1536,29 +1818,6 @@ function murmurAfter(el,where){
   document.querySelectorAll('.bubble.bot').forEach(el=>murmurAfter(el));
   document.querySelectorAll('.liquid-topbar .glass-sludge').forEach(el=>{ el.title=murmurLine(); });
   const bar=document.querySelector('.bottom-bar'); if(bar){ const d=document.createElement('span'); d.className='agent murmur'; d.style.marginLeft='8px'; d.textContent=murmurLine(); bar.insertBefore(d, bar.querySelector('.dock')); }
-})();
-</script>
-<script>
-/* auto-detect browser language; anything not Chinese gets the whole site translated (Google Translate element).
-   ?lang=xx forces a target, ?lang=zh forces original. */
-function googleTranslateElementInit(){
-  new google.translate.TranslateElement({pageLanguage:'zh-TW',autoDisplay:false},'google_translate_element');
-}
-(function(){
-  const q=new URLSearchParams(location.search).get('lang');
-  const nav=(navigator.language||navigator.userLanguage||'').toLowerCase();
-  const target=(q||nav.split('-')[0]||'').toLowerCase();
-  const wantOriginal=!target||target.startsWith('zh');
-  const cookie=(document.cookie.match(/(?:^|; )googtrans=([^;]*)/)||[])[1];
-  const set=v=>{ document.cookie='googtrans='+v+';path=/;max-age='+(v?31536000:0); document.cookie='googtrans='+v+';path=/;domain='+location.hostname+';max-age='+(v?31536000:0); };
-  if(wantOriginal){ if(cookie) set(''); }
-  else if(cookie!=='/zh-TW/'+target){ set('/zh-TW/'+target); }
-  const s=document.createElement('script'); s.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'; s.async=true; document.head.appendChild(s);
-  const st=document.getElementById('gtStatus');
-  if(!wantOriginal){
-    st.innerHTML='已自動翻譯為 '+target.toUpperCase()+'<button type="button" id="gtOrig">顯示原文</button>';
-    document.getElementById('gtOrig').addEventListener('click',()=>{ set(''); const u=new URL(location.href); u.searchParams.set('lang','zh'); location.href=u.toString(); });
-  }
 })();
 </script>
 </body>
