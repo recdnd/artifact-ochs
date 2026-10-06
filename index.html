@@ -110,7 +110,9 @@ body{
   40%{box-shadow:0 24px 50px rgba(80,60,160,.28),0 0 0 10px rgba(139,92,246,.12)}
   100%{box-shadow:0 48px 110px rgba(80,60,160,.55),0 0 0 22px rgba(139,92,246,.22)}
 }
+/* 卡頓 (主筆 2026-10-07: ochs 不靠這個, 先 comment out)
 .omni-button.press-shadow{animation:pressShadow 2.4s ease forwards}
+*/
 .mfa-panel{
   width:min(620px,94vw);padding:34px;border-radius:38px;max-height:92vh;overflow:auto;
   background:
@@ -301,13 +303,17 @@ button,input,select,textarea,.captcha-tile,.chip,.dock-item,.badge,.nav-btn{
   position:relative;overflow:hidden;
 }
 button:hover,.chip:hover,.dock-item:hover,.nav-btn:hover{transform:translateY(-2px) scale(1.012);box-shadow:0 26px 60px rgba(80,60,160,.22),0 0 0 8px rgba(139,92,246,.08)}
+/* 卡頓 (主筆 2026-10-07: ochs 不靠這個, 先 comment out)
 button:active,.captcha-tile:active{transform:scale(.97) translateY(1px);transition-duration:.9s}
+*/
  /* 電費站按鈕: hover 1.5s 變大, 亮綠從左邊長滿; 離開再 1.5s 縮回 */
 button:not(.tiny-x){isolation:isolate}
 button:not(.tiny-x):hover{scale:1.12}
 .hover-fill{position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;background:#2bea5c;transform:scaleX(0);transform-origin:left center;transition:transform 1.5s ease}
 button:hover>.hover-fill{transform:scaleX(1)}
+/* 卡頓 (主筆 2026-10-07: ochs 不靠這個, 先 comment out)
 .silk-pressing{animation:silkPress 2.2s cubic-bezier(.16,.8,.2,1) both !important}
+*/
 .silk-ripple{
   position:absolute;left:var(--rx,50%);top:var(--ry,50%);width:260%;aspect-ratio:1;border-radius:999px;pointer-events:none;
   background:radial-gradient(circle,rgba(255,255,255,.9),rgba(139,92,246,.35) 40%,transparent 70%);
@@ -1235,6 +1241,7 @@ function tr(s){
   const $ = id => document.getElementById(id);
   const SUF=tr('(高信任敘事角色)');
   function prepareSlowReveal(el){
+    return; /* 卡頓 (主筆 2026-10-07: ochs 不靠這個, 先 comment out): 內容一個一個隔 0.52s 才浮現 */
     const nodes=[...el.querySelectorAll('h2,p,label,button,.glass-sludge,.agent,.panel-title,.hero-title,.chip,.badge,strong')];
     nodes.forEach((node,idx)=>{
       node.classList.add('slow-reveal-item');
@@ -1290,7 +1297,8 @@ function tr(s){
   document.addEventListener('pointerdown',e=>{
     const t=e.target.closest('button,.captcha-tile,.chip,.dock-item,select,.nav-btn,label.consent-row');
     if(!t) return;
-    t.classList.remove('silk-pressing'); void t.offsetWidth; t.classList.add('silk-pressing');
+    // 卡頓 (主筆 2026-10-07: ochs 不靠這個, 先 comment out)
+    // t.classList.remove('silk-pressing'); void t.offsetWidth; t.classList.add('silk-pressing');
     const r=t.getBoundingClientRect();
     const rip=document.createElement('span'); rip.className='silk-ripple';
     rip.style.setProperty('--rx',((e.clientX-r.left)/r.width*100)+'%');
@@ -1360,9 +1368,11 @@ function tr(s){
   }
   setInterval(()=>{ if(Date.now()-lastActive>idleGap){ spawnIdleBanner(); lastActive=Date.now(); idleGap=5000+Math.random()*4000; } },1000);
   function pulse(btn){
+    /* 卡頓 (主筆 2026-10-07: ochs 不靠這個, 先 comment out)
     btn.classList.remove('press-shadow');
     void btn.offsetWidth;
     btn.classList.add('press-shadow');
+    */
   }
   function toast(title,text,delay=0){
     setTimeout(()=>{
