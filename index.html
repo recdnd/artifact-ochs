@@ -1386,7 +1386,7 @@ function tr(s){
     $('auInput').value='';
     if(auCredits<=0){ auPush('bot','你的 credits 已用完. 充值以繼續使用 AI.'); return; }
     auPush('me',v); auCredits--; $('auCredits').textContent=auCredits+' / 50'; $('auBar').style.width=(auCredits/50*100)+'%';
-    setTimeout(()=>{ auPush('bot',murmurLine().replace(/^🪄 ?/,'')); if(auCredits<=0) setTimeout(()=>auPush('bot','你的 credits 已用完 (0 / 50). 充值以繼續.'),1200); },1800);
+    setTimeout(()=>{ auPush('bot',tr(murmurLine()).replace(/^🪄 ?/,'')); if(auCredits<=0) setTimeout(()=>auPush('bot','你的 credits 已用完 (0 / 50). 充值以繼續.'),1200); },1800);
   }
   $('auSend').addEventListener('click',auSend);
   au.querySelector('.au-topup').addEventListener('click',e=>{ e.stopPropagation(); openBrowser('ad'); });
