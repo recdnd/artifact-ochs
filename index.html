@@ -436,6 +436,9 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 .au-row{display:flex;gap:6px}
 .au-row input{flex:1;min-width:0;padding:7px 10px;border-radius:999px;font-size:11px;background:rgba(255,255,255,.7)}
 .au-row button{min-height:0;width:auto;padding:6px 12px;font-size:12px}
+.au-row{flex-wrap:wrap}
+.au-row button{white-space:nowrap}
+.au-row .murmur{order:9;flex-basis:100%}
 /* idle banners */
 .idle-rail{position:fixed;left:0;right:0;z-index:2147481000;display:flex;flex-direction:column;pointer-events:none}
 #idleTop{top:0}
@@ -902,6 +905,8 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
   <button class="omni-button intent-pick" type="button" data-mfa-skip style="margin-top:8px">建立新的語義實體</button>
 </div></div>
 
+<div id="trivialBackdrop" class="modal-backdrop"><div class="mfa-panel"></div></div>
+
 <div id="enhanceBackdrop" class="modal-backdrop"><div class="mfa-panel">
   <div class="agent">已自動補全 14 個欄位. 頁面資訊似乎較多, 是否啟用 AI 精簡模式?</div>
   <p class="npc-data" id="enhanceList"></p>
@@ -976,7 +981,7 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
   <div class="au-bar"><i id="auBar"></i></div>
   <button type="button" class="omni-button au-topup trap-link" data-dest="ad" data-mfa-skip>充值 · 解鎖更多 AI</button>
   <div class="au-chat" id="auChat"><div class="au-msg bot">嗨! 我是你的 AI. 問我任何事, 每則訊息消耗 1 credit.</div></div>
-  <div class="au-row"><input id="auInput" class="no-trap" placeholder="問 AI..."><button type="button" class="omni-button" id="auSend" data-mfa-skip>送出</button></div>
+  <div class="au-row"><input id="auInput" class="no-trap" placeholder="問 AI..."><button type="button" class="omni-button" id="auSend" data-mfa-skip>送出</button><button type="button" class="omni-button" id="auBoost" data-mfa-skip>⚡ 深度</button></div>
 </div>
 <div id="idleTop" class="idle-rail"></div>
 <div id="idleBottom" class="idle-rail"></div>
@@ -1222,7 +1227,34 @@ const I18N_EN={
 "🪄 這個驗證碼是我們發給你的, 所以我們也知道答案. 但還是請你輸入.": "🪄 We sent you this verification code, so we also know the answer. But please enter it anyway.",
 "🪄 系統建議你再想一下. 系統本身沒有想.": "🪄 The system suggests you think it over. The system itself did not think.",
 "已自動翻譯為": "Auto-switched to",
-"顯示原文": "Show original"
+"顯示原文": "Show original",
+"⚡ 深度": "⚡ Deep",
+"⚡ 已使用全部剩餘 credits 進行深度思考. 結論: 好的.": "⚡ Used all remaining credits for deep thinking. Conclusion: okay.",
+"已訂閱 HyperPlus 年費方案": "Subscribed to HyperPlus (annual)",
+"已從預設付款方式扣款 US$ 479.88, 自動續訂已開啟. Credits 將於下個計費週期生效.": "US$ 479.88 was charged to your default payment method. Auto-renew is on. Credits take effect next billing cycle.",
+"確定要關閉這則橫幅嗎?": "Are you sure you want to close this banner?",
+"是, 我確定要關閉這則不包含任何資訊的橫幅": "Yes, I am sure I want to close this banner that contains no information",
+"否, 我確定不要關閉這則不包含任何資訊的橫幅": "No, I am sure I do not want to close this banner that contains no information",
+"關閉後, 這則橫幅將不再顯示. 其他橫幅會照常出現.": "Once closed, this banner will no longer be shown. Other banners will appear as usual.",
+"我已了解, 並確認要關閉這一則橫幅": "I understand, and confirm I want to close this one banner",
+"我已了解, 並確認不要關閉這一則橫幅": "I understand, and confirm I do not want to close this one banner",
+"最後確認: 你確定你確定嗎?": "Final confirmation: are you sure you are sure?",
+"確定, 我確定我確定": "Sure, I am sure I am sure",
+"不確定, 我確定我不確定": "Not sure, I am sure I am not sure",
+"確定要稍後再看 AI 功能嗎?": "Are you sure you want to see AI features later?",
+"是, 我要稍後再看這個 AI 提醒": "Yes, I want to see this AI reminder later",
+"否, 我不要稍後再看這個 AI 提醒": "No, I do not want to see this AI reminder later",
+"稍後是指大約 20 秒後. 確定嗎?": "Later means in about 20 seconds. Are you sure?",
+"確定, 20 秒後再提醒我一次": "Sure, remind me again in 20 seconds",
+"不確定, 現在就繼續提醒我一次": "Not sure, keep reminding me right now",
+"確定要變更這個勾選框的狀態嗎?": "Are you sure you want to change the state of this checkbox?",
+"是, 我要變更這個勾選框目前的狀態": "Yes, I want to change the current state of this checkbox",
+"否, 我不要變更這個勾選框目前的狀態": "No, I do not want to change the current state of this checkbox",
+"此變更可隨時改回, 不會影響任何東西. 仍要繼續嗎?": "This change can be undone at any time and affects nothing. Continue anyway?",
+"繼續, 我了解這不會影響任何東西": "Continue, I understand this affects nothing",
+"不繼續, 我了解這不會影響任何東西": "Do not continue, I understand this affects nothing",
+"已取消": "Cancelled",
+"沒有任何變更. 你的猶豫已被記錄.": "Nothing was changed. Your hesitation has been recorded."
 };
 const LANG=(()=>{
   const q=(new URLSearchParams(location.search).get('lang')||'').toLowerCase();
@@ -1378,7 +1410,7 @@ function tr(s){
   const au=$('aiUpsell');
   setTimeout(()=>au.classList.add('in'),10000);
   function auMini(){ au.classList.add('mini'); clearTimeout(auMiniTimer); auMiniTimer=setTimeout(()=>au.classList.remove('mini'),20000); }
-  $('auLater').addEventListener('click',e=>{ e.stopPropagation(); auMini(); });
+  $('auLater').addEventListener('click',e=>{ e.stopPropagation(); askTrivial('later',auMini); });
   au.addEventListener('click',()=>{ if(au.classList.contains('mini')) au.classList.remove('mini'); });
   function auPush(cls,text){ const d=document.createElement('div'); d.className='au-msg '+cls; d.textContent=text; $('auChat').appendChild(d); $('auChat').scrollTop=1e6; }
   function auSend(){
@@ -1389,8 +1421,49 @@ function tr(s){
     setTimeout(()=>{ auPush('bot',tr(murmurLine()).replace(/^🪄 ?/,'')); if(auCredits<=0) setTimeout(()=>auPush('bot','你的 credits 已用完 (0 / 50). 充值以繼續.'),1200); },1800);
   }
   $('auSend').addEventListener('click',auSend);
-  au.querySelector('.au-topup').addEventListener('click',e=>{ e.stopPropagation(); openBrowser('ad'); });
+  au.querySelector('.au-topup').addEventListener('click',e=>{ e.stopPropagation(); toast('已訂閱 HyperPlus 年費方案','已從預設付款方式扣款 US$ 479.88, 自動續訂已開啟. Credits 將於下個計費週期生效.'); openBrowser('ad'); });
   $('auInput').addEventListener('keydown',e=>{ if(e.key==='Enter') auSend(); });
+  /* ---- 反向確認 (主筆 2026-11-05, 靈感: 一顆沒確認的按鈕把重置額度一次耗光): 容易誤觸 / 誤填的地方一下就生效 ---- */
+  $('auBoost').addEventListener('click',()=>{
+    auCredits=0; $('auCredits').textContent='0 / 50'; $('auBar').style.width='0%';
+    auPush('bot','⚡ 已使用全部剩餘 credits 進行深度思考. 結論: 好的.');
+    setTimeout(()=>auPush('bot','你的 credits 已用完 (0 / 50). 充值以繼續.'),1200);
+  });
+  $('auInput').addEventListener('blur',()=>{ if($('auInput').value.trim()) auSend(); });
+  /* ---- 反向確認: 無關緊要的小事要確認好幾輪, 兩顆鈕一樣大, 字幾乎一樣長, 順序每輪亂換 ---- */
+  const TRIVIAL={
+    banner:[
+      ['確定要關閉這則橫幅嗎?','是, 我確定要關閉這則不包含任何資訊的橫幅','否, 我確定不要關閉這則不包含任何資訊的橫幅'],
+      ['關閉後, 這則橫幅將不再顯示. 其他橫幅會照常出現.','我已了解, 並確認要關閉這一則橫幅','我已了解, 並確認不要關閉這一則橫幅'],
+      ['最後確認: 你確定你確定嗎?','確定, 我確定我確定','不確定, 我確定我不確定']
+    ],
+    later:[
+      ['確定要稍後再看 AI 功能嗎?','是, 我要稍後再看這個 AI 提醒','否, 我不要稍後再看這個 AI 提醒'],
+      ['稍後是指大約 20 秒後. 確定嗎?','確定, 20 秒後再提醒我一次','不確定, 現在就繼續提醒我一次']
+    ],
+    check:[
+      ['確定要變更這個勾選框的狀態嗎?','是, 我要變更這個勾選框目前的狀態','否, 我不要變更這個勾選框目前的狀態'],
+      ['此變更可隨時改回, 不會影響任何東西. 仍要繼續嗎?','繼續, 我了解這不會影響任何東西','不繼續, 我了解這不會影響任何東西']
+    ]
+  };
+  function askTrivial(kind,onYes){
+    const steps=TRIVIAL[kind], host=topPanel(); let i=0, box;
+    if(host) box=growWith(host,''); else { box=$('trivialBackdrop').querySelector('.mfa-panel'); show($('trivialBackdrop')); }
+    const end=()=>{ if(host) box.remove(); else hide($('trivialBackdrop')); };
+    const render=()=>{
+      const s=steps[i];
+      const yes='<button type="button" class="omni-button triv-yes" data-mfa-skip>'+s[1]+'</button>', no='<button type="button" class="omni-button triv-no" data-mfa-skip>'+s[2]+'</button>';
+      const pair=Math.random()<.5?[yes,no]:[no,yes];
+      box.innerHTML='<div class="glass-sludge" style="padding:14px 18px">'+s[0]+' <span class="badge">'+(i+1)+' / '+steps.length+'</span></div><div class="agent murmur">'+murmurLine()+'</div>'+pair[0]+'<div style="height:8px"></div>'+pair[1];
+      box.querySelector('.triv-yes').addEventListener('click',()=>{ if(++i<steps.length) render(); else { end(); onYes(); } });
+      box.querySelector('.triv-no').addEventListener('click',()=>{ end(); toast('已取消','沒有任何變更. 你的猶豫已被記錄.'); });
+    };
+    render();
+  }
+  ['consentCheck','undoGate'].forEach(id=>{
+    const c=$(id);
+    c.addEventListener('click',e=>{ const want=c.checked; e.preventDefault(); askTrivial('check',()=>{ c.checked=want; }); });
+  });
   /* ---- idle banners ---- */
   const idleLines=['你的工作區已於背景更新. 無需操作.','提示: 此橫幅不包含任何資訊.','Agent 注意到你已數秒未操作, 已為你保留上下文.','系統正在為你準備一個更好的體驗 (無預計時間).','新功能: 橫幅. 你正在使用它.','為了提升可靠性, 我們新增了此通知.','你的 session 仍然有效. 此訊息用於確認這一點.','Cookie 偏好已被記住, 但我們忘了是哪些.','已自動儲存你尚未輸入的內容.','本橫幅由前一個橫幅觸發.','我們更新了隱私政策. 內容與之前相同.','你沒有錯過任何事. 這是一個提醒.','Agent 建議: 繼續閒置以查看更多橫幅.','此區域保留給未來的重要訊息. 目前顯示這一句.'];
   const idleTags=['Notice','Update','Tip','Agent','System','Reminder','Beta'];
@@ -1401,7 +1474,7 @@ function tr(s){
     const rail=$(side); if(rail.children.length>=7) return;
     const b=document.createElement('div'); b.className='idle-banner';
     b.innerHTML='<span class="ib-tag">'+idleTags[Math.floor(Math.random()*idleTags.length)]+'</span><span class="ib-text">'+idleLines[Math.floor(Math.random()*idleLines.length)]+'</span><button type="button" class="ib-close" data-mfa-skip>(關閉)</button>';
-    b.querySelector('.ib-close').addEventListener('click',()=>{ b.classList.remove('in'); setTimeout(()=>b.remove(),2700); });
+    b.querySelector('.ib-close').addEventListener('click',()=>askTrivial('banner',()=>{ b.classList.remove('in'); setTimeout(()=>b.remove(),2700); }));
     rail.appendChild(b); setTimeout(()=>b.classList.add('in'),40);
   }
   setInterval(()=>{ if(Date.now()-lastActive>idleGap){ spawnIdleBanner(); lastActive=Date.now(); idleGap=5000+Math.random()*4000; } },1000);
@@ -1832,7 +1905,7 @@ function murmurAfter(el,where){
 (function sprinkle(){
   document.querySelectorAll('.panel-title,.help-title,.hero-title,.copilot-head h2').forEach(el=>murmurAfter(el));
   document.querySelectorAll('label:not(.consent-row)').forEach(el=>murmurAfter(el));
-  document.querySelectorAll('button.omni-button:not(.fab)').forEach(el=>murmurAfter(el));
+  document.querySelectorAll('button.omni-button:not(.fab):not(#auBoost)').forEach(el=>murmurAfter(el));
   document.querySelectorAll('.fab-tip').forEach(el=>{ if(!el.textContent.trim()) el.textContent=murmurLine(); });
   document.querySelectorAll('.chips,.mini-actions,.follow,.grid3').forEach(el=>murmurAfter(el,'append'));
   document.querySelectorAll('.chip,.nav-btn,.badge').forEach(el=>{ el.title=murmurLine(); });
