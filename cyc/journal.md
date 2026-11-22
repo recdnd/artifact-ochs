@@ -35,6 +35,9 @@ glassBreathe 改走 `translate`, 讓 `transform` 留給傾斜.
 **Result**
 本機 4444 驗過: 無 JS 錯誤, 精靈中段 / 落定兩張截圖正常. 未 push.
 
+**收斂 (同日)**
+主筆:「故意的頻閃刪掉，只有panel出現和退出做複雜精密動畫就行」. 拔掉 1 / 2 / 5 和高光 (glassBreathe 回原樣). 留: modal 精靈進出, toast 滴出, 內建瀏覽器麻糬進出(出也補上), hover 卡 / 指令面板展開(dzBloom). 實測閒置時 panel 只剩原本 glassBreathe, 無 JS 錯誤.
+
 ### 2026-10-07 -- 電費站兩招 + 真英文版
 
 **Why**

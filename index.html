@@ -1843,68 +1843,27 @@ function murmurAfter(el,where){
 })();
 </script>
 <!-- ===== v5 眩暈: iOS 26 Liquid Glass 撥號 panel 致敬 (主筆 2026-11-22「給ochs站的每個panel增加更複雜精密眩暈的動畫效果」) =====
-     靈感來源: iPhone 聯絡人點撥號, 小 panel 從按鈕果凍狀變形長出來; 關掉「減少動態效果」前後連行為都不一樣.
-     做法: 不閃不卡, 全部是真實 OS 會做的 morph / 果凍 / 視差 / 跟手傾斜, 疊在一起. -->
+     靈感來源: iPhone 聯絡人點撥號, 小 panel 從按鈕果凍狀變形長出來.
+     主筆 2026-11-22 收斂:「故意的頻閃刪掉，只有panel出現和退出做複雜精密動畫就行」-- 常駐晃動 / 跟手傾斜 / 高光 / 視差 / 捲動斜都拔掉, 只留出現與退出. -->
 <style>
-/* glassBreathe 改走 translate, 讓 transform 留給跟手傾斜 */
-@keyframes glassBreathe{0%,100%{translate:0 0}50%{translate:0 -3px}}
-@keyframes dzJelly{
-  0%{rotate:0deg;scale:1 1}
-  23%{rotate:.45deg;scale:1.007 .993}
-  51%{rotate:-.38deg;scale:.994 1.008}
-  77%{rotate:.22deg;scale:1.004 .996}
-  100%{rotate:0deg;scale:1 1}
-}
-@keyframes dzBlob{
-  0%,100%{border-radius:32px}
-  33%{border-radius:46px 24px 40px 28px}
-  66%{border-radius:26px 42px 30px 48px}
-}
-.main,.copilot,.modal-backdrop,.mega-modal,.outer,.wrap{perspective:1000px}
-.panel,.outer,.wrap,.inner,.entity-row,.empty,.status,.copilot,.sidebar,.modal-shell,.modal-subpanel,.bottom-bar{
-  animation:
-    glassBreathe 9.5s ease-in-out var(--d0,0s) infinite,
-    dzJelly 7.3s ease-in-out var(--d1,0s) infinite,
-    dzBlob 11s ease-in-out var(--d2,0s) infinite;
-  will-change:transform,rotate,scale;
-}
-/* 鏡面高光: 跟著游標走, 外加一圈慢轉的虹彩 */
-.glass-sludge::after,.panel::after,.mfa-panel::after,.mega-modal::after,.modal-subpanel::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;
-  background:
-    radial-gradient(260px circle at var(--gx,28%) var(--gy,18%),rgba(255,255,255,.62),rgba(255,255,255,.12) 38%,transparent 62%),
-    conic-gradient(from var(--ring-angle) at var(--gx,50%) var(--gy,50%),rgba(139,92,246,.10),rgba(34,211,238,.10),rgba(236,72,153,.10),rgba(250,204,21,.08),rgba(139,92,246,.10));
-  mix-blend-mode:soft-light;
-  animation:ringSpin 19s linear infinite reverse;
-  transition:opacity 1.6s ease;
-}
-.mfa-panel,.mega-modal,.modal-subpanel,.panel{position:relative}
-/* ☠️ 圖例開著時 ::after 讓回給 [data-ochs] 標籤 */
-body.ochs-on [data-ochs]::after{position:static;inset:auto;mix-blend-mode:normal;animation:none;z-index:auto;pointer-events:auto;transition:none}
-.captcha-tile::after{z-index:auto}
 /* 精靈: 從剛剛點的那一點果凍狀長出來, 關的時候縮回去 */
 @keyframes dzGenieIn{
-  0%  {transform:translate(var(--fx,0px),var(--fy,0px)) scale(.05,.035) rotateX(58deg) rotateZ(-16deg);border-radius:999px;filter:blur(16px) saturate(3);opacity:0}
-  18% {transform:translate(calc(var(--fx,0px)*.62),calc(var(--fy,0px)*.4)) scale(.3,.1) rotateX(42deg) rotateZ(10deg);border-radius:999px;filter:blur(9px) saturate(2.4);opacity:.92}
-  40% {transform:translate(calc(var(--fx,0px)*.14),calc(var(--fy,0px)*-.08)) scale(1.16,.74) rotateX(-14deg) rotateZ(-3.5deg);border-radius:90px 30px 96px 40px;filter:blur(3px) saturate(1.8)}
-  56% {transform:translate(0,-14px) scale(.88,1.14) rotateX(9deg) rotateZ(2.4deg);border-radius:30px 76px 40px 84px;filter:blur(.6px) saturate(1.3)}
-  70% {transform:translate(0,7px) scale(1.07,.94) rotateX(-5deg) rotateZ(-1.2deg);border-radius:52px 34px 58px 30px;filter:none;opacity:1}
-  82% {transform:translate(0,-3px) scale(.975,1.03) rotateX(2deg) rotateZ(.6deg);border-radius:34px 46px 36px 44px}
-  92% {transform:scale(1.012,.99) rotateZ(-.25deg)}
+  0%  {transform:perspective(1000px) translate(var(--fx,0px),var(--fy,0px)) scale(.05,.035) rotateX(58deg) rotateZ(-16deg);border-radius:999px;filter:blur(16px) saturate(3);opacity:0}
+  18% {transform:perspective(1000px) translate(calc(var(--fx,0px)*.62),calc(var(--fy,0px)*.4)) scale(.3,.1) rotateX(42deg) rotateZ(10deg);border-radius:999px;filter:blur(9px) saturate(2.4);opacity:.92}
+  40% {transform:perspective(1000px) translate(calc(var(--fx,0px)*.14),calc(var(--fy,0px)*-.08)) scale(1.16,.74) rotateX(-14deg) rotateZ(-3.5deg);border-radius:90px 30px 96px 40px;filter:blur(3px) saturate(1.8)}
+  56% {transform:perspective(1000px) translate(0,-14px) scale(.88,1.14) rotateX(9deg) rotateZ(2.4deg);border-radius:30px 76px 40px 84px;filter:blur(.6px) saturate(1.3)}
+  70% {transform:perspective(1000px) translate(0,7px) scale(1.07,.94) rotateX(-5deg) rotateZ(-1.2deg);border-radius:52px 34px 58px 30px;filter:none;opacity:1}
+  82% {transform:perspective(1000px) translate(0,-3px) scale(.975,1.03) rotateX(2deg) rotateZ(.6deg);border-radius:34px 46px 36px 44px}
+  92% {transform:perspective(1000px) scale(1.012,.99) rotateZ(-.25deg)}
   100%{transform:none;border-radius:38px;filter:none;opacity:1}
 }
 @keyframes dzGenieOut{
   0%  {transform:none;filter:none;opacity:1}
-  20% {transform:scale(1.06,.93) rotateX(-6deg) rotateZ(1.4deg);border-radius:60px 30px 70px 34px}
-  48% {transform:translate(calc(var(--fx,0px)*.3),calc(var(--fy,0px)*.22)) scale(.62,.4) rotateX(30deg) rotateZ(-8deg);border-radius:999px;filter:blur(4px) saturate(2)}
-  100%{transform:translate(var(--fx,0px),var(--fy,0px)) scale(.04,.03) rotateX(62deg) rotateZ(18deg);border-radius:999px;filter:blur(16px) saturate(3);opacity:0}
+  20% {transform:perspective(1000px) scale(1.06,.93) rotateX(-6deg) rotateZ(1.4deg);border-radius:60px 30px 70px 34px}
+  48% {transform:perspective(1000px) translate(calc(var(--fx,0px)*.3),calc(var(--fy,0px)*.22)) scale(.62,.4) rotateX(30deg) rotateZ(-8deg);border-radius:999px;filter:blur(4px) saturate(2)}
+  100%{transform:perspective(1000px) translate(var(--fx,0px),var(--fy,0px)) scale(.04,.03) rotateX(62deg) rotateZ(18deg);border-radius:999px;filter:blur(16px) saturate(3);opacity:0}
 }
-.modal-backdrop .dz-in{
-  animation:
-    dzGenieIn 3.4s cubic-bezier(.22,.7,.2,1) backwards,
-    dzJelly 7.3s ease-in-out 3.4s infinite;
-  transform-origin:50% 50%;
-}
+.modal-backdrop .dz-in{animation:dzGenieIn 3.4s cubic-bezier(.22,.7,.2,1) backwards;transform-origin:50% 50%}
 .modal-backdrop .dz-out{animation:dzGenieOut 2.2s cubic-bezier(.5,0,.8,.4) forwards}
 /* toast: 一滴從右下角滴出來 */
 @keyframes dzDrop{
@@ -1916,103 +1875,60 @@ body.ochs-on [data-ochs]::after{position:static;inset:auto;mix-blend-mode:normal
   100%{transform:none;border-radius:28px}
 }
 .toast{animation:dzDrop 2.6s cubic-bezier(.2,.9,.25,1) both}
-/* 內建瀏覽器: 拉上來的時候像麻糬 */
-@keyframes dzMochi{
+/* 內建瀏覽器: 拉上來像麻糬, 收下去先被壓扁再掉 */
+@keyframes dzMochiIn{
   0%  {scale:.84 1.2}
   38% {scale:1.07 .92}
   58% {scale:.96 1.05}
   76% {scale:1.02 .98}
   100%{scale:1 1}
 }
-.browser-sheet.show{animation:dzMochi 4.6s cubic-bezier(.2,.8,.2,1) both;transform-origin:50% 100%}
-/* 視差: 頂欄 / 主體 / 側欄 往不同方向慢慢漂 */
-.shell{translate:calc(var(--px,0)*-12px) calc(var(--py,0)*-7px);transition:translate 2.6s cubic-bezier(.16,.8,.2,1)}
-.liquid-topbar{translate:calc(var(--px,0)*16px) calc(var(--py,0)*5px);transition:translate 3.2s cubic-bezier(.16,.8,.2,1)}
-.bottom-bar{translate:calc(var(--px,0)*9px) 0}
-.fab-stack{translate:calc(var(--px,0)*-20px) calc(var(--py,0)*-12px);transition:translate 1.8s cubic-bezier(.34,1.56,.64,1)}
-/* 捲動: 整片果凍斜一下再彈回 */
-.main{transform:skewY(var(--sk,0deg));transform-origin:50% var(--sko,50%);transition:transform 1.3s cubic-bezier(.34,1.9,.64,1)}
+@keyframes dzMochiOut{
+  0%  {scale:1 1}
+  22% {scale:1.08 .9}
+  48% {scale:.9 1.12}
+  100%{scale:.8 1.25}
+}
+.browser-sheet{transform-origin:50% 100%}
+.browser-sheet.dz-in{animation:dzMochiIn 4.6s cubic-bezier(.2,.8,.2,1) both}
+.browser-sheet.dz-out{animation:dzMochiOut 4.2s cubic-bezier(.3,.6,.3,1) both}
+/* hover 卡 / 指令面板: 縮成一顆再展開 */
+@keyframes dzBloom{
+  0%  {transform:perspective(900px) scale(.2,.08) rotateX(50deg);border-radius:999px;filter:blur(10px);opacity:0}
+  40% {transform:perspective(900px) scale(1.1,.86) rotateX(-10deg);border-radius:60px 26px 64px 30px;filter:blur(1px);opacity:1}
+  62% {transform:perspective(900px) scale(.95,1.06) rotateX(5deg);filter:none}
+  80% {transform:perspective(900px) scale(1.02,.98) rotateX(-2deg)}
+  100%{transform:none}
+}
+.hover-card.show{animation:dzBloom 1.8s cubic-bezier(.22,.7,.2,1) both}
+.cmdk.show .cmdk-box{animation:dzBloom 2.4s cubic-bezier(.22,.7,.2,1) both}
 </style>
 <script>
 (function(){
-  const PANEL='.panel,.outer,.wrap,.inner,.entity-row,.empty,.status,.copilot,.sidebar,.modal-shell,.modal-subpanel,.mfa-panel,.mega-modal,.bubble,.glass-sludge';
-  const root=document.documentElement;
-  /* 每塊錯開相位, 一起晃但不同步 */
-  function dephase(el){
-    if(el.dataset.dz) return; el.dataset.dz='1';
-    ['--d0','--d1','--d2'].forEach(k=>el.style.setProperty(k,(-Math.random()*11).toFixed(2)+'s'));
-  }
-  document.querySelectorAll(PANEL).forEach(dephase);
-
-  /* 跟手傾斜: 游標下那一塊和它外面幾層一起轉, 越外層越慢 */
-  let mx=innerWidth/2, my=innerHeight/2, tgt=null, chain=[], queued=false;
-  function chainOf(t){
-    const out=[]; let el=t&&t.closest&&t.closest(PANEL);
-    while(el && out.length<5){ out.push(el); el=el.parentElement&&el.parentElement.closest(PANEL); }
-    return out;
-  }
-  function frame(){
-    queued=false;
-    const next=chainOf(tgt);
-    chain.forEach(el=>{ if(!next.includes(el)){ el.style.transition='transform 2.4s cubic-bezier(.34,1.56,.64,1)'; el.style.transform=''; } });
-    next.forEach((el,i)=>{
-      const r=el.getBoundingClientRect(); if(!r.width) return;
-      const nx=Math.max(-.5,Math.min(.5,(mx-r.left)/r.width-.5));
-      const ny=Math.max(-.5,Math.min(.5,(my-r.top)/r.height-.5));
-      const amp=Math.min(9,2600/Math.max(r.width,r.height))/(1+i*.55);
-      el.style.transition='transform '+(0.9+i*.55).toFixed(2)+'s cubic-bezier(.34,1.56,.64,1)';
-      el.style.transform='perspective(900px) rotateX('+(-ny*amp).toFixed(2)+'deg) rotateY('+(nx*amp).toFixed(2)+'deg) translateZ(0)';
-      el.style.setProperty('--gx',((nx+.5)*100).toFixed(1)+'%');
-      el.style.setProperty('--gy',((ny+.5)*100).toFixed(1)+'%');
-    });
-    chain=next;
-    root.style.setProperty('--px',(mx/innerWidth-.5).toFixed(3));
-    root.style.setProperty('--py',(my/innerHeight-.5).toFixed(3));
-  }
-  document.addEventListener('pointermove',e=>{ mx=e.clientX; my=e.clientY; tgt=e.target; if(!queued){ queued=true; requestAnimationFrame(frame); } },{passive:true});
-
-  /* 精靈: 記住最後點的那一點, panel 從那裡長出來 / 縮回去 */
+  /* 記住最後點的那一點, panel 從那裡長出來 / 縮回去 */
   let lx=innerWidth/2, ly=innerHeight*.9;
   document.addEventListener('pointerdown',e=>{ lx=e.clientX; ly=e.clientY; },true);
   function boxOf(bd){ return bd.querySelector(':scope>.mfa-panel,:scope>.mega-modal'); }
-  function aim(box){
-    box.style.setProperty('--fx',(lx-innerWidth/2).toFixed(0)+'px');
-    box.style.setProperty('--fy',(ly-innerHeight/2).toFixed(0)+'px');
-  }
+  function play(el,open){ el.classList.remove('dz-in','dz-out'); void el.offsetWidth; el.classList.add(open?'dz-in':'dz-out'); }
   function genie(bd,open){
     const box=boxOf(bd); if(!box) return;
-    dephase(box); aim(box);
-    box.classList.remove('dz-in','dz-out'); void box.offsetWidth;
-    box.classList.add(open?'dz-in':'dz-out');
+    box.style.setProperty('--fx',(lx-innerWidth/2).toFixed(0)+'px');
+    box.style.setProperty('--fy',(ly-innerHeight/2).toFixed(0)+'px');
+    play(box,open);
   }
   new MutationObserver(list=>{
     list.forEach(m=>{
       if(m.type==='attributes'){
-        const bd=m.target; if(!bd.classList||!bd.classList.contains('modal-backdrop')) return;
-        const was=(m.oldValue||'').split(/\s+/).includes('show'), now=bd.classList.contains('show');
-        if(was!==now) genie(bd,now);
+        const el=m.target; if(!el.classList) return;
+        const was=(m.oldValue||'').split(/\s+/).includes('show'), now=el.classList.contains('show');
+        if(was===now) return;
+        if(el.classList.contains('modal-backdrop')) genie(el,now);
+        else if(el.classList.contains('browser-sheet')) play(el,now);
       }else{
-        m.addedNodes.forEach(n=>{
-          if(n.nodeType!==1) return;
-          n.querySelectorAll&&n.querySelectorAll(PANEL).forEach(dephase);
-          if(n.matches&&n.matches('.modal-backdrop.show')) genie(n,true);
-        });
+        m.addedNodes.forEach(n=>{ if(n.nodeType===1&&n.matches&&n.matches('.modal-backdrop.show')) genie(n,true); });
       }
     });
   }).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class'],attributeOldValue:true});
-
-  /* 捲動: 依速度斜一下, 停手才彈回 */
-  const main=document.querySelector('.main');
-  if(main){
-    let last=main.scrollTop, rest=null;
-    main.addEventListener('scroll',()=>{
-      const v=main.scrollTop-last; last=main.scrollTop;
-      const sk=Math.max(-3.2,Math.min(3.2,-v*.06));
-      main.style.setProperty('--sk',sk.toFixed(2)+'deg');
-      main.style.setProperty('--sko',v>0?'100%':'0%');
-      clearTimeout(rest); rest=setTimeout(()=>main.style.setProperty('--sk','0deg'),140);
-    },{passive:true});
-  }
 })();
 </script>
 </body>
