@@ -1879,6 +1879,8 @@ function murmurAfter(el,where){
   transition:opacity 1.6s ease;
 }
 .mfa-panel,.mega-modal,.modal-subpanel,.panel{position:relative}
+/* ☠️ 圖例開著時 ::after 讓回給 [data-ochs] 標籤 */
+body.ochs-on [data-ochs]::after{position:static;inset:auto;mix-blend-mode:normal;animation:none;z-index:auto;pointer-events:auto;transition:none}
 .captcha-tile::after{z-index:auto}
 /* 精靈: 從剛剛點的那一點果凍狀長出來, 關的時候縮回去 */
 @keyframes dzGenieIn{
