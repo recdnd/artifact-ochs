@@ -2199,5 +2199,287 @@ function murmurAfter(el,where){
   }))).observe(document.body,{subtree:true,childList:true});
 })();
 </script>
+<!-- ===== 遊戲層 (主筆 2026-11-22「做成一個可以通關的遊戲，解鎖全部（比如完成MFA）地圖和完成任務可以獲得相應成就（有成就彈窗）」) =====
+     13 區地圖: 第一次走進某個 modal / 面板 = 發現那一區. 21 個任務成就 + 1 個通關成就.
+     只旁聽站上原有的事件與畫面狀態, 不改原本流程. 進度存 localStorage(ochs-game-v1), 地圖裡可重置.
+     遊戲層自己帶中英日三語, 根節點 data-i18n-skip, 不經 I18N 字典. 遊戲層本身是誠實 UI: 關閉就關閉. -->
+<style>
+#ogBtn{position:fixed;left:10px;bottom:118px;z-index:25000;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.82);color:#29233d;font:800 12px/1 Inter,-apple-system,sans-serif;cursor:pointer;
+  box-shadow:0 8px 24px rgba(50,45,90,.16)}
+#ogBtn,#ogBtn:hover,#ogMap button,#ogMap button:hover,#ogEnd button,#ogEnd button:hover{transform:none !important;scale:none !important;transition:background .15s ease !important}
+#ogBtn:hover{background:#fff;box-shadow:0 8px 24px rgba(50,45,90,.16) !important}
+#ogBtn .og-bar{width:46px;height:5px;border-radius:999px;background:rgba(41,35,61,.12);overflow:hidden}
+#ogBtn .og-bar i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#facc15);border-radius:inherit}
+
+#ogPop{position:fixed;top:16px;left:50%;translate:-50% 0;z-index:2147483000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.og-card{pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:14px;width:min(380px,calc(100vw - 32px));padding:12px 16px 12px 12px;border-radius:20px;
+  background:linear-gradient(135deg,#1f1b33,#2d2650);color:#fff;font-family:Inter,-apple-system,sans-serif;
+  box-shadow:0 18px 50px rgba(20,15,50,.45),inset 0 1px 0 rgba(255,255,255,.12);
+  animation:ogIn .9s cubic-bezier(.2,1.4,.4,1) both}
+.og-card.out{animation:ogOut .5s ease forwards}
+.og-card .og-ic{flex:none;width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:26px;
+  background:radial-gradient(circle at 30% 25%,#fde68a,#f59e0b 60%,#b45309);box-shadow:0 0 0 2px rgba(253,230,138,.5),0 0 22px rgba(250,204,21,.55)}
+.og-card.zone .og-ic{background:radial-gradient(circle at 30% 25%,#a5f3fc,#22d3ee 60%,#0e7490);box-shadow:0 0 0 2px rgba(165,243,252,.5),0 0 22px rgba(34,211,238,.5)}
+.og-card .og-k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#fcd34d;font-weight:800}
+.og-card.zone .og-k{color:#67e8f9}
+.og-card .og-n{font-size:15px;font-weight:900;margin-top:2px}
+.og-card .og-d{font-size:11px;opacity:.75;margin-top:2px;line-height:1.35}
+.og-card .og-p{margin-left:auto;font-size:11px;font-weight:800;opacity:.6;white-space:nowrap}
+@keyframes ogIn{0%{opacity:0;transform:translateY(-40px) scale(.7)}60%{opacity:1;transform:translateY(4px) scale(1.03)}100%{transform:none}}
+@keyframes ogOut{to{opacity:0;transform:translateY(-24px) scale(.92)}}
+
+#ogMap,#ogEnd{position:fixed;inset:0;z-index:2147482000;display:none;align-items:center;justify-content:center;padding:16px;
+  background:rgba(20,16,40,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-family:Inter,-apple-system,sans-serif;color:#29233d}
+#ogMap.show,#ogEnd.show{display:flex}
+.og-sheet{width:min(1040px,100%);max-height:88vh;overflow:auto;background:#fbfaff;border-radius:26px;padding:24px;box-shadow:0 30px 90px rgba(10,8,30,.4)}
+.og-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.og-head h2{margin:0;font-size:22px;font-weight:900}
+.og-head .og-count{font-size:13px;font-weight:800;color:#b45309}
+.og-head .og-sp{flex:1}
+.og-x{border:1px solid #e4e2f0;background:#fff;border-radius:999px;padding:8px 14px;font:700 12px Inter,-apple-system,sans-serif;color:#29233d;cursor:pointer}
+.og-x:hover{background:#f1effa !important}
+.og-x.warn{color:#b91c1c}
+.og-prog{height:8px;border-radius:999px;background:#ece9f7;margin:14px 0 18px;overflow:hidden}
+.og-prog i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#facc15);border-radius:inherit;transition:width .6s ease}
+.og-final{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;margin-bottom:14px;border:1px dashed #e5d6a8;background:#fffbeb}
+.og-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.og-zone{border:1px solid #e9e6f5;border-radius:18px;padding:14px;background:#fff}
+.og-zone.lock{background:repeating-linear-gradient(135deg,#f6f5fb 0 10px,#f1eff9 10px 20px);border-style:dashed}
+.og-zh{display:flex;align-items:center;gap:8px;font-weight:900;font-size:14px;margin-bottom:8px}
+.og-zh .og-zi{font-size:18px}
+.og-zh .og-zc{margin-left:auto;font-size:11px;font-weight:800;color:#8b87a3}
+.og-zone.lock .og-zh{color:#8b87a3}
+.og-a{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px solid #f1eff8}
+.og-a .og-ai{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:16px;background:#f1eff8;filter:grayscale(1);opacity:.55}
+.og-a.got .og-ai{filter:none;opacity:1;background:radial-gradient(circle at 30% 25%,#fef3c7,#fcd34d)}
+.og-a .og-an{font-size:12px;font-weight:800}
+.og-a .og-ad{font-size:11px;color:#6b6785;line-height:1.35;margin-top:1px}
+.og-a.got .og-an::after{content:" ✓";color:#16a34a}
+.og-lockmsg{font-size:11px;color:#8b87a3}
+.og-endbox{width:min(520px,100%);text-align:center;background:linear-gradient(160deg,#1f1b33,#3b2f6b);color:#fff;border-radius:28px;padding:34px 28px;
+  box-shadow:0 30px 90px rgba(10,8,30,.5);animation:ogIn 1.1s cubic-bezier(.2,1.4,.4,1) both}
+.og-endbox .og-trophy{font-size:64px;filter:drop-shadow(0 0 24px rgba(250,204,21,.7))}
+.og-endbox h2{margin:8px 0 6px;font-size:30px;font-weight:900;color:#fde68a}
+.og-endbox p{margin:6px 0;font-size:13px;opacity:.85;line-height:1.5}
+.og-endbox .og-x{margin-top:16px}
+@media(max-width:600px){.og-sheet{padding:16px}.og-grid{grid-template-columns:1fr}}
+</style>
+<div id="ogPop" data-i18n-skip></div>
+<button id="ogBtn" class="dead-hover" type="button" data-mfa-skip data-i18n-skip><span>🏆</span><span id="ogBtnN">0 / 0</span><span class="og-bar"><i id="ogBtnBar"></i></span></button>
+<div id="ogMap" data-i18n-skip><div class="og-sheet" id="ogSheet"></div></div>
+<div id="ogEnd" data-i18n-skip><div class="og-endbox" id="ogEndBox"></div></div>
+<script>
+(function(){
+  const L=(typeof LANG!=='undefined'&&LANG)||'zh';
+  const T=o=>o?(o[L]||o.zh):'';
+  const UI={
+    ach:{zh:'成就解鎖',en:'Achievement unlocked',ja:'実績解除'},
+    zone:{zh:'發現新區域',en:'New area discovered',ja:'新エリア発見'},
+    map:{zh:'攻略地圖',en:'Map',ja:'攻略マップ'},
+    close:{zh:'關閉',en:'Close',ja:'閉じる'},
+    reset:{zh:'重置進度',en:'Reset progress',ja:'進行状況をリセット'},
+    reset2:{zh:'再按一次確認重置',en:'Click again to reset',ja:'もう一度押してリセット'},
+    lockZone:{zh:'還沒找到這一區.',en:'Area not found yet.',ja:'このエリアはまだ見つかっていません。'},
+    start:{zh:'遊戲開始',en:'Game start',ja:'ゲーム開始'},
+    startN:{zh:'OCHS 攻略',en:'Clear OCHS',ja:'OCHS 攻略'},
+    startD:{zh:'解鎖全部 {n} 個成就即可通關. 左下角 🏆 看地圖.',en:'Unlock all {n} achievements to clear the game. Map: 🏆 in the bottom-left.',ja:'{n} 個の実績をすべて解除するとクリア。マップは左下の 🏆。'},
+    endT:{zh:'通關!',en:'Cleared!',ja:'クリア！'},
+    endD:{zh:'用時 {t}, 點擊 {c} 次.',en:'Time {t}, {c} clicks.',ja:'所要時間 {t}、クリック {c} 回。'},
+    endD2:{zh:'OCHS 沒有因此變得比較好用.',en:'OCHS did not get any easier to use.',ja:'OCHS は少しも使いやすくなっていません。'},
+    endBtn:{zh:'繼續受苦',en:'Keep suffering',ja:'苦しみ続ける'},
+    finalLocked:{zh:'解鎖其他全部成就後出現',en:'Appears after every other achievement',ja:'ほかの実績をすべて解除すると出現'}
+  };
+  const Z=[
+    {id:'work',ic:'🧰',n:{zh:'工作台',en:'Workbench',ja:'ワークベンチ'}},
+    {id:'mfa',ic:'🔐',n:{zh:'驗證迷宮',en:'Verification Maze',ja:'認証の迷宮'}},
+    {id:'close',ic:'🌀',n:{zh:'關閉地獄',en:'Closing Hell',ja:'閉じる地獄'}},
+    {id:'entity',ic:'🧬',n:{zh:'實體增強室',en:'Enhancement Lab',ja:'エンティティ強化室'}},
+    {id:'merchant',ic:'💰',n:{zh:'商人學院',en:'Merchant Academy',ja:'商人アカデミー'}},
+    {id:'delete',ic:'🗑️',n:{zh:'刪除三關',en:'Deletion Gauntlet',ja:'削除三関門'}},
+    {id:'undo',ic:'↩️',n:{zh:'撤銷審問室',en:'Undo Tribunal',ja:'取り消し審問室'}},
+    {id:'quiet',ic:'🔕',n:{zh:'減少干擾中心',en:'Focus Center',ja:'集中モードセンター'}},
+    {id:'invite',ic:'👥',n:{zh:'團隊邀請',en:'Team Invites',ja:'チーム招待'}},
+    {id:'browser',ic:'🌐',n:{zh:'內建瀏覽器',en:'Built-in Browser',ja:'内蔵ブラウザ'}},
+    {id:'cmdk',ic:'⌘',n:{zh:'命令盤',en:'Command Palette',ja:'コマンドパレット'}},
+    {id:'ai',ic:'✨',n:{zh:'AI 小助手',en:'AI Assistant',ja:'AI アシスタント'}},
+    {id:'banner',ic:'📣',n:{zh:'橫幅河',en:'Banner River',ja:'バナーの川'}}
+  ];
+  const A=[
+    {id:'legend',z:'work',ic:'☠️',n:{zh:'看穿一切',en:'See Through It All',ja:'すべてお見通し'},d:{zh:'打開左下角的 ☠️ 圖例.',en:'Open the ☠️ legend in the bottom-left.',ja:'左下の ☠️ 凡例を開く。'}},
+    {id:'deadbtn',z:'work',ic:'🪦',n:{zh:'死鈕也能按',en:'Dead Button Walking',ja:'死んだボタン'},d:{zh:'點一顆滑上去毫無反應的按鈕.',en:'Click a button that ignores your hover.',ja:'ホバーしても無反応なボタンを押す。'}},
+    {id:'esc3',z:'work',ic:'⎋',n:{zh:'Esc 不是答案',en:'Esc Is Not an Answer',ja:'Esc は答えではない'},d:{zh:'按三次 Esc.',en:'Press Esc three times.',ja:'Esc を 3 回押す。'}},
+    {id:'tinyx',z:'work',ic:'🔍',n:{zh:'真正的關閉鍵',en:'The Real Close Button',ja:'本物の閉じるボタン'},d:{zh:'找到那顆真的能關東西的小 x.',en:'Find the tiny x that actually closes things.',ja:'本当に閉じられる小さな x を見つける。'}},
+    {id:'priest',z:'work',ic:'⛪',n:{zh:'高信任敘事角色',en:'High-Trust Narrative Character',ja:'高信頼ナラティブキャラクター'},d:{zh:'在名字欄重新輸入一次「神父」.',en:'Retype "Priest" in the name field.',ja:'名前欄に「神父」をもう一度入力する。'}},
+    {id:'mfa_code',z:'mfa',ic:'🔢',n:{zh:'六位數的信任',en:'Six Digits of Trust',ja:'6 桁の信頼'},d:{zh:'輸入正確的 6 位驗證碼.',en:'Enter the correct 6-digit code.',ja:'正しい 6 桁の認証コードを入力する。'}},
+    {id:'captcha',z:'mfa',ic:'🚦',n:{zh:'我不是機器人',en:"I'm Not a Robot",ja:'私はロボットではありません'},d:{zh:'連過兩輪圖片驗證.',en:'Pass both image challenges.',ja:'画像認証を 2 回連続で突破する。'}},
+    {id:'mfa_done',z:'mfa',ic:'✅',n:{zh:'身份已驗證',en:'Identity Verified',ja:'本人確認完了'},d:{zh:'走完整套 MFA, 回到原本要做的事.',en:'Finish the whole MFA flow and get back to what you were doing.',ja:'MFA をすべて終えて、元の操作に戻る。'}},
+    {id:'closed',z:'close',ic:'🚪',n:{zh:'已關閉',en:'Closed',ja:'閉じました'},d:{zh:'真的走到「已關閉」那一頁.',en:'Actually reach the "Closed" screen.',ja:'「閉じました」画面に本当にたどり着く。'}},
+    {id:'grow5',z:'close',ic:'🪜',n:{zh:'越關越長',en:'The More You Close',ja:'閉じるほど伸びる'},d:{zh:'按 × 讓 panel 長出 5 層.',en:'Press × until panels have grown 5 layers.',ja:'× を押してパネルを 5 層伸ばす。'}},
+    {id:'enhanced',z:'entity',ic:'🧪',n:{zh:'被優化掉的名字',en:'Optimized Away',ja:'最適化で消えた名前'},d:{zh:'保存增強後的實體, 看著名字變成 Untitled.',en:'Save the enhanced entity and watch its name become Untitled.',ja:'強化したエンティティを保存し、名前が Untitled になるのを見届ける。'}},
+    {id:'compact',z:'entity',ic:'🗜️',n:{zh:'精簡成更大',en:'Compact, but Bigger',ja:'簡潔にして巨大化'},d:{zh:'啟用精簡模式.',en:'Turn on compact mode.',ja:'簡潔モードを有効にする。'}},
+    {id:'merchant',z:'merchant',ic:'🎓',n:{zh:'商業人格認證',en:'Certified Merchant Persona',ja:'ビジネス人格認定'},d:{zh:'勾選商人, 走完 3 步 onboarding.',en:'Tick Merchant and finish the 3-step onboarding.',ja:'商人にチェックを入れ、3 ステップの onboarding を終える。'}},
+    {id:'deleted',z:'delete',ic:'⚰️',n:{zh:'軟刪除',en:'Soft Delete',ja:'ソフト削除'},d:{zh:'過三關, 把 NPC 刪掉 (30 天內可復原).',en:'Get through all three gates and delete the NPC (recoverable for 30 days).',ja:'3 つの関門を越えて NPC を削除する（30 日間は復元可能）。'}},
+    {id:'undo',z:'undo',ic:'📝',n:{zh:'解釋你自己',en:'Explain Yourself',ja:'説明責任'},d:{zh:'選好理由, 送出 Undo.',en:'Pick a reason and submit the Undo.',ja:'理由を選んで Undo を送信する。'}},
+    {id:'quiet',z:'quiet',ic:'🤫',n:{zh:'安靜得很大聲',en:'Loudly Quiet',ja:'うるさい静けさ'},d:{zh:'啟用減少干擾.',en:'Turn on Reduce Interruptions.',ja:'集中モードを有効にする。'}},
+    {id:'invite',z:'invite',ic:'🙅',n:{zh:'獨行俠',en:'Lone Wolf',ja:'一匹狼'},d:{zh:'打開邀請, 再把它關掉.',en:'Open the invite, then close it.',ja:'招待を開いて、閉じる。'}},
+    {id:'explore',z:'browser',ic:'🧭',n:{zh:'探索相關資源',en:'Explore Related Resources',ja:'関連リソースを探索'},d:{zh:'在 404 頁按「探索相關資源」.',en:'On the 404 page, press "Explore related resources".',ja:'404 ページで「関連リソースを探索」を押す。'}},
+    {id:'cmdk',z:'cmdk',ic:'⌨️',n:{zh:'⌘K 高手',en:'⌘K Power User',ja:'⌘K の達人'},d:{zh:'打開命令盤.',en:'Open the command palette.',ja:'コマンドパレットを開く。'}},
+    {id:'broke',z:'ai',ic:'💸',n:{zh:'破產',en:'Broke',ja:'破産'},d:{zh:'把 AI credits 用到 0.',en:'Spend your AI credits down to 0.',ja:'AI credits を 0 まで使い切る。'}},
+    {id:'banners',z:'banner',ic:'🛶',n:{zh:'橫幅收藏家',en:'Banner Collector',ja:'バナー収集家'},d:{zh:'什麼都不做, 等 8 條橫幅冒出來.',en:'Do nothing until 8 banners show up.',ja:'何もせず、バナーが 8 本出るまで待つ。'}}
+  ];
+  const FINAL={id:'clear',ic:'🏆',n:{zh:'OCHS 通關',en:'OCHS Cleared',ja:'OCHS クリア'},d:{zh:'解鎖其他全部成就.',en:'Unlock every other achievement.',ja:'ほかの実績をすべて解除する。'}};
+  const TOTAL=A.length+1;
+  const KEY='ochs-game-v1';
+  let S; try{ S=JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){}
+  const fresh=!S;
+  if(!S) S={t0:Date.now(),clicks:0,got:{},zones:{work:Date.now()},banners:0,esc:0};
+  let dirty=false;
+  const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} dirty=false; };
+  setInterval(()=>{ if(dirty) save(); },2000);
+  const $=id=>document.getElementById(id);
+  const gotN=()=>Object.keys(S.got).length;
+  const fmt=ms=>{ const s=Math.max(0,Math.round(ms/1000)), h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0'); };
+
+  /* ---- 彈窗: 一次一張, 排隊 ---- */
+  const queue=[]; let busy=false, endPending=false;
+  function pop(kind,ic,n,d){ queue.push({kind,ic,n,d}); if(!busy) next(); }
+  function next(){
+    const it=queue.shift(); if(!it){ busy=false; if(endPending){ endPending=false; setTimeout(showEnd,400); } return; } busy=true;
+    const c=document.createElement('div'); c.className='og-card'+(it.kind==='zone'?' zone':'');
+    c.innerHTML='<div class="og-ic"></div><div><div class="og-k"></div><div class="og-n"></div><div class="og-d"></div></div><div class="og-p"></div>';
+    c.querySelector('.og-ic').textContent=it.ic;
+    c.querySelector('.og-k').textContent=T(it.kind==='zone'?UI.zone:it.kind==='start'?UI.start:UI.ach);
+    c.querySelector('.og-n').textContent=it.n; c.querySelector('.og-d').textContent=it.d;
+    c.querySelector('.og-p').textContent=gotN()+' / '+TOTAL;
+    c.addEventListener('click',()=>openMap());
+    $('ogPop').appendChild(c);
+    const stay=queue.length>2?1400:(it.kind==='zone'?2200:3400); /* 排隊多就播快, 不讓成就晚十幾秒才出來 */
+    setTimeout(()=>{ c.classList.add('out'); setTimeout(()=>{ c.remove(); next(); },500); }, stay);
+  }
+  function badge(){
+    $('ogBtnN').textContent=gotN()+' / '+TOTAL;
+    $('ogBtnBar').style.width=(gotN()/TOTAL*100)+'%';
+    if($('ogMap').classList.contains('show')) renderMap();
+  }
+
+  function discover(z){
+    if(!z||S.zones[z]) return;
+    S.zones[z]=Date.now(); dirty=true;
+    const zo=Z.find(x=>x.id===z); if(zo) pop('zone',zo.ic,T(zo.n),'');
+    badge();
+  }
+  function unlock(id){
+    if(S.got[id]) return;
+    const a=A.find(x=>x.id===id); if(!a) return;
+    discover(a.z);
+    S.got[id]=Date.now(); dirty=true; save();
+    pop('ach',a.ic,T(a.n),T(a.d));
+    badge();
+    if(A.every(x=>S.got[x.id])&&!S.got.clear){
+      S.got.clear=Date.now(); S.tEnd=Date.now(); save();
+      pop('ach',FINAL.ic,T(FINAL.n),T(FINAL.d)); badge();
+      endPending=true; /* 彈窗全部播完才出通關畫面 */
+    }
+  }
+
+  /* ---- 地圖 ---- */
+  let resetArm=false;
+  function renderMap(){
+    const sh=$('ogSheet'); const n=gotN();
+    let h='<div class="og-head"><h2>🗺️ '+T(UI.map)+'</h2><span class="og-count">🏆 '+n+' / '+TOTAL+'</span><span class="og-sp"></span>'
+      +'<button type="button" class="og-x warn dead-hover" data-og="reset">'+T(resetArm?UI.reset2:UI.reset)+'</button>'
+      +'<button type="button" class="og-x dead-hover" data-og="close">'+T(UI.close)+'</button></div>'
+      +'<div class="og-prog"><i style="width:'+(n/TOTAL*100)+'%"></i></div>';
+    const fin=!!S.got.clear;
+    h+='<div class="og-final og-a'+(fin?' got':'')+'"><div class="og-ai">'+FINAL.ic+'</div><div><div class="og-an">'+esc(T(FINAL.n))+'</div><div class="og-ad">'+esc(fin?T(FINAL.d):T(UI.finalLocked))+'</div></div></div><div class="og-grid">';
+    Z.forEach(z=>{
+      const as=A.filter(a=>a.z===z.id), seen=!!S.zones[z.id], g=as.filter(a=>S.got[a.id]).length;
+      h+='<div class="og-zone'+(seen?'':' lock')+'"><div class="og-zh"><span class="og-zi">'+(seen?z.ic:'❔')+'</span><span>'+(seen?esc(T(z.n)):'???')+'</span><span class="og-zc">'+g+' / '+as.length+'</span></div>';
+      if(!seen) h+='<div class="og-lockmsg">'+esc(T(UI.lockZone))+'</div>';
+      else as.forEach(a=>{ h+='<div class="og-a'+(S.got[a.id]?' got':'')+'"><div class="og-ai">'+a.ic+'</div><div><div class="og-an">'+esc(T(a.n))+'</div><div class="og-ad">'+esc(T(a.d))+'</div></div></div>'; });
+      h+='</div>';
+    });
+    sh.innerHTML=h+'</div>';
+  }
+  function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function openMap(){ resetArm=false; renderMap(); $('ogMap').classList.add('show'); }
+  function closeMap(){ $('ogMap').classList.remove('show'); }
+  $('ogBtn').addEventListener('click',e=>{ e.stopPropagation(); openMap(); });
+  $('ogMap').addEventListener('click',e=>{
+    if(e.target===$('ogMap')) return closeMap();
+    const b=e.target.closest('[data-og]'); if(!b) return;
+    if(b.dataset.og==='close') closeMap();
+    if(b.dataset.og==='reset'){
+      if(!resetArm){ resetArm=true; renderMap(); return; }
+      S={t0:Date.now(),clicks:0,got:{},zones:{work:Date.now()},banners:0,esc:0}; save(); resetArm=false; badge(); renderMap();
+    }
+  });
+  function showEnd(){
+    const t=fmt((S.tEnd||Date.now())-S.t0);
+    $('ogEndBox').innerHTML='<div class="og-trophy">🏆</div><h2>'+esc(T(UI.endT))+'</h2><p>'+esc(T(UI.endD).replace('{t}',t).replace('{c}',S.clicks))+'</p><p>'+esc(T(UI.endD2))+'</p><button type="button" class="og-x dead-hover" data-og="end">'+esc(T(UI.endBtn))+'</button>';
+    $('ogEnd').classList.add('show');
+  }
+  $('ogEnd').addEventListener('click',e=>{ if(e.target===$('ogEnd')||e.target.closest('[data-og="end"]')) $('ogEnd').classList.remove('show'); });
+
+  /* ---- 旁聽: modal / 面板第一次打開 = 發現那一區; 有些打開本身就是任務完成 ---- */
+  const ZONE_OF={mfaModal:'mfa',captchaModal:'mfa',trustModal:'mfa',mfaOkModal:'mfa',megaBackdrop:'close',confirmBackdrop:'close',finalBackdrop:'close',mustCheckBackdrop:'close',
+    enhanceBackdrop:'entity',compactBackdrop:'entity',intentBackdrop:'entity',merchantBackdrop:'merchant',archiveBackdrop:'delete',trashBackdrop:'delete',delNameBackdrop:'delete',
+    whyDelBackdrop:'delete',undoBackdrop:'undo',quietBackdrop:'quiet',inviteBackdrop:'invite',browserSheet:'browser',cmdk:'cmdk'};
+  const DONE_ON={captchaModal:'mfa_code',trustModal:'captcha',finalBackdrop:'closed',cmdk:'cmdk'};
+  let merchantClicks=0;
+  new MutationObserver(ms=>ms.forEach(m=>{
+    if(m.type==='attributes'){
+      const el=m.target; if(!el.id) return;
+      const was=(m.oldValue||'').split(/\s+/), cls=el.classList;
+      if(el.id==='aiUpsell'&&cls.contains('in')&&!was.includes('in')) discover('ai');
+      if(!cls.contains('show')||was.includes('show')) return;
+      if(ZONE_OF[el.id]) discover(ZONE_OF[el.id]);
+      if(DONE_ON[el.id]) unlock(DONE_ON[el.id]);
+      if(el.id==='merchantBackdrop') merchantClicks=0;
+    }else m.addedNodes.forEach(n=>{
+      if(n.nodeType!==1) return;
+      if(n.classList.contains('idle-banner')){ discover('banner'); S.banners=(S.banners||0)+1; dirty=true; if(S.banners>=8) unlock('banners'); }
+      if(n.querySelector&&n.querySelector('.nest-close,.nest-yes')) discover('close');
+      if(n.querySelector&&n.querySelector('.nest-tip')) unlock('closed');
+      if(n.querySelector&&n.querySelector('.grow-x')){ discover('close'); if(document.querySelectorAll('.grow-x').length>=5) unlock('grow5'); }
+    });
+  })).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class'],attributeOldValue:true});
+
+  /* ---- 旁聽: 點擊 / 按鍵 (document capture, 在站上的 MFA 閘門之前) ---- */
+  document.addEventListener('pointerdown',()=>{ S.clicks++; dirty=true; },true);
+  document.addEventListener('click',e=>{
+    const t=e.target;
+    if(t.closest('#tinyX')) unlock('tinyx');
+    if(t.closest('#legendToggle')) unlock('legend');
+    if(t.closest('.omni-button.dead-hover')) unlock('deadbtn');
+    if(t.closest('#mfaContinue')) unlock('mfa_done');
+    if(t.closest('#compactClose')) unlock('compact');
+    if(t.closest('.trap-more')) unlock('explore');
+    if(t.closest('#merchantNext')&&(++merchantClicks)>=3) unlock('merchant');
+  },true);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ if($('ogMap').classList.contains('show')){ closeMap(); return; } S.esc=(S.esc||0)+1; dirty=true; if(S.esc>=3) unlock('esc3'); }
+  },true);
+  /* 會先過 MFA 的按鈕: 等它真的放行 (secure-continue) 才算 */
+  const onSecure=(id,fn)=>{ const el=$(id); if(el) el.addEventListener('secure-continue',fn); };
+  onSecure('quietClose',()=>unlock('quiet'));
+  onSecure('inviteClose',()=>unlock('invite'));
+  onSecure('undoConfirm',()=>{ const r=$('undoReason'), o=$('undoOther'); if(r&&r.value&&(r.value!=='other'||(o&&o.value.trim().length>=20))) unlock('undo'); });
+
+  /* ---- 看畫面狀態 (每秒) ---- */
+  const SUFX=(typeof tr==='function')?tr('(高信任敘事角色)'):'(高信任敘事角色)';
+  setInterval(()=>{
+    const nf=$('nameField'); if(nf&&nf.value.includes(SUFX)) unlock('priest');
+    const en=$('entityName'); if(en&&/Untitled/.test(en.textContent)) unlock('enhanced');
+    const es=$('entityState'); if(es&&/Soft-deleted/.test(es.textContent)) unlock('deleted');
+    const cr=$('auCredits'); if(cr&&/^\s*0\s*\//.test(cr.textContent)) unlock('broke');
+  },1000);
+
+  badge();
+  if(fresh){ save(); setTimeout(()=>pop('start','🎮',T(UI.startN),T(UI.startD).replace('{n}',TOTAL)),1800); }
+  window.OCHS_GAME={state:()=>S,unlock,openMap};
+})();
+</script>
 </body>
 </html>
