@@ -8,6 +8,10 @@
 <meta name="description" content="OmniNPC Copilot HyperStudio is the AI-native, agentic, context-aware NPC copilot. Turn a single character intent into a governed, workspace-ready entity graph.">
 <meta name="keywords" content="AI NPC generator, agentic NPC copilot, AI character creator, LLM workspace, semantic entity graph, AI-native studio, context-aware agent, governed workflow, enterprise AI, Hyper-4, NPC AI, AI 角色生成, AI NPC 生成器, 智能體, 工作流, 角色設定 AI, キャラクター生成 AI">
 <link rel="canonical" href="https://ochs.sus.mom/">
+<link rel="alternate" hreflang="x-default" href="https://ochs.sus.mom/">
+<link rel="alternate" hreflang="zh-Hant" href="https://ochs.sus.mom/?lang=zh">
+<link rel="alternate" hreflang="en" href="https://ochs.sus.mom/?lang=en">
+<link rel="alternate" hreflang="ja" href="https://ochs.sus.mom/?lang=ja">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="OmniNPC HyperStudio">
 <meta property="og:title" content="OmniNPC Copilot HyperStudio: the AI-native NPC copilot">
@@ -989,8 +993,8 @@ input:focus,select:focus,textarea:focus{outline:0;box-shadow:0 0 0 6px rgba(139,
 </div>
 
 <script>
-/* 真英文版: 中文正本 + 手翻英文字典. 瀏覽器語言不是中文就整站切英文 (含所有 agent 小話 / toast / 橫幅 / alert).
-   ?lang=en / ?lang=zh 強制, 點 🌐 那顆切換會記住. 動態長出來的節點由 MutationObserver 接著翻. */
+/* 多語言: 中文正本 + 手翻英文 / 日文字典. 瀏覽器語言清單裡先出現的中文或日文決定, 都沒有就英文 (含所有 agent 小話 / toast / 橫幅 / alert).
+   ?lang=en / ?lang=zh / ?lang=ja 強制, 點 🌐 那顆切換會記住. 動態長出來的節點由 MutationObserver 接著翻. */
 const I18N_EN={
 "HyperStudio infers structured fields from natural language so your team can ship narrative systems faster. 相關資源:": "HyperStudio infers structured fields from natural language so your team can ship narrative systems faster. Related resources:",
 "模型說明": "Model notes",
@@ -1224,30 +1228,270 @@ const I18N_EN={
 "已自動翻譯為": "Auto-switched to",
 "顯示原文": "Show original"
 };
+/* 日文版 (主筆 2026-11-22「做多語言適配再加個自動日語」): 同一批 key, 手翻. 瀏覽器語言日文優先 -> 整站切日文. */
+const I18N_JA={
+"HyperStudio infers structured fields from natural language so your team can ship narrative systems faster. 相關資源:": "HyperStudio infers structured fields from natural language so your team can ship narrative systems faster. 関連リソース：",
+"模型說明": "モデルについて",
+"隱私中心": "プライバシーセンター",
+"技術文件": "技術ドキュメント",
+"工作流最佳實踐": "ワークフローのベストプラクティス",
+"輔助句: 這句話其實完全可以不存在, 但我們認為任何標題下面都應該再解釋一次.": "補足：この一文は正直なくてもまったく問題ありませんが、すべての見出しの下ではもう一度説明すべきだと私たちは考えています。",
+"🪄 一個用來把一句話膨脹成 17 個欄位, 6 個 panel, 3 層提示與一個不必要工作流的現代 LLM 網站.": "🪄 一文を 17 個のフィールド、6 つのパネル、3 階層のヒント、そして不要なワークフローひとつに膨らませるための、モダンな LLM サイト。",
+"🪄 Agent 認為這個角色具有高敘事張力, 並已預先推斷 17 個欄位. 見": "🪄 Agent はこのキャラクターに高い物語的緊張があると判断し、17 個のフィールドを事前に推論しました。参照：",
+"推斷規範": "推論ガイドライン",
+"與": "・",
+"欄位本體論": "フィールド・オントロジー",
+"🪄 Agent 已根據你尚未輸入的需求, 預先推斷了 12 個欄位.": "🪄 Agent は、あなたがまだ入力していない要件に基づき、12 個のフィールドを事前に推論しました。",
+"幫我建立一個神父: 這個 NPC 為錢說話. 實力很強.": "神父をひとり作って：この NPC はお金のために話す。実力はかなり強い。",
+"神父": "神父",
+"🪄 已替你優化表達": "🪄 表現を最適化しました",
+"實力強度": "実力の強さ",
+"弱": "弱",
+"中": "中",
+"強": "強",
+"脈絡依賴": "文脈依存",
+"由 Agent 動態決定": "Agent が動的に決定",
+"暫不定義": "現時点では未定義",
+"⚠ 尚未完成": "⚠ 未完了",
+"商人": "商人",
+"🪄 因為「實力很強」像結構化訊息, 所以我們自動建立了 strength enum, 信任度, 敘事稅率與精神光環色.": "🪄「実力はかなり強い」が構造化された情報に見えたため、strength enum・信頼度・物語税率・オーラの色を自動で作成しました。",
+"合作夥伴": "パートナー",
+"我已閱讀並理解 AI 可能會擅自擴張欄位與工作流 (": "AI がフィールドやワークフローを勝手に拡張する可能性があることを読み、理解しました（",
+"條款": "規約",
+"隱私": "プライバシー",
+"允許 Agent 學習此次 Undo": "今回の Undo を Agent の学習に使用することを許可する",
+"減少干擾": "集中モード",
+"實力": "実力",
+"呈現層說明": "表示レイヤーについて",
+"席位方案": "シートプラン",
+"邀請政策": "招待ポリシー",
+"師匠 1.68 unpulled / 小精靈 1 unpulled / 教導主任 2 unpulled": "師匠 1.68 unpulled / 小精霊 1 unpulled / 生活指導主任 2 unpulled",
+"尺的怪處": "物差しの不思議",
+"這一格填什麼": "この欄には何を入れる？",
+"🪄 整個可操作工作台被當成 help 折進來了, 所以現在只能看不能用.": "🪄 操作できるワークベンチ全体が help として折りたたまれたため、現在は閲覧のみ可能です。",
+"🪄 Agent 解讀: 你目前正在使用一個沒有必要存在的狀態 panel.": "🪄 Agent の解釈：あなたは現在、存在する必要のないステータスパネルを使用しています。",
+"相關資源:": "関連リソース：",
+"有更新的版本在做同一件事": "より新しいバージョンが同じことをしています",
+"版本差異": "バージョン差分",
+"; 只留著查": "；参照用に残しているだけです",
+"最佳實踐": "ベストプラクティス",
+", 不要改.": "。変更しないでください。",
+"grounding 說明": "grounding について",
+"Agent 政策": "Agent ポリシー",
+"狀態定義": "ステータスの定義",
+"觀測日誌": "観測ログ",
+"🪄 Agent: 我們把「取消」做得跟「繼續」一樣大, 以示公平.": "🪄 Agent：公平を期すため、「キャンセル」を「続行」と同じ大きさにしました。",
+"為了繼續執行此一般操作, 請輸入我們剛剛要求你輸入的 6 位驗證碼.": "この一般的な操作を続行するには、先ほど入力をお願いした 6 桁の認証コードを入力してください。",
+"你的身份已成功驗證. 你現在可以繼續執行剛才原本已經要執行的操作.": "本人確認が完了しました。先ほど実行しようとしていた操作を、そのまま続行できます。",
+"🪄 你只是點了一個欄位, 但系統認為你需要一個 820px 寬的大型工作流 panel.": "🪄 フィールドをひとつクリックしただけですが、幅 820px の大型ワークフローパネルが必要だとシステムは判断しました。",
+"工作流文件": "ワークフロードキュメント",
+"中斷影響": "中断による影響",
+"🪄 正在把一個普通欄位重新詮釋成多階段 AI 工作流.": "🪄 ごく普通のフィールドを、多段階の AI ワークフローとして再解釈しています。",
+"運行提示": "実行ヒント",
+"這個 panel 的資訊主要用來證明系統很複雜.": "このパネルの情報は、主にシステムが複雑であることを証明するためのものです。",
+"🪄 Agent: 如果你不理解這些欄位, 表示自動化正在正常運作.": "🪄 Agent：これらのフィールドの意味がわからない場合、自動化は正常に動作しています。",
+"這裡沒有右上角關閉. 關閉操作藏在內文最下面.": "右上に閉じるボタンはありません。閉じる操作は本文のいちばん下に隠れています。",
+"若你想回到原本只是想輸入一個名字的畫面, 請在本段文字下面尋找「關閉」按鈕.": "名前をひとつ入力したかっただけの画面に戻りたい場合は、この文章の下にある「閉じる」ボタンを探してください。",
+"關閉": "閉じる",
+"確認要關閉嗎?": "本当に閉じますか？",
+"關閉後, 沉浸式 NPC 智慧控制中心將被關閉, 並可能影響你的語義完整性與代理沉浸感.": "閉じると、イマーシブ NPC インテリジェンス・コントロールセンターが終了し、セマンティック整合性とエージェント没入感に影響する可能性があります。",
+"語義完整性": "セマンティック整合性",
+"關閉政策": "クローズポリシー",
+"真的要關閉嗎? 系統建議你再想一下.": "本当に本当に閉じますか？もう少し考えることをシステムはおすすめします。",
+"🪄 關閉後, 你的代理沉浸感將無法恢復. 我們也不確定那是什麼.": "🪄 閉じると、エージェント没入感は元に戻せません。それが何なのかは私たちにもわかりません。",
+"不要關閉": "閉じない",
+"確認關閉": "閉じることを確定",
+"已關閉": "閉じました",
+"沉浸式控制中心已成功關閉.": "イマーシブ・コントロールセンターは正常に終了しました。",
+"🪄 Agent: 你現在可以關閉這個「已關閉」提示.": "🪄 Agent：この「閉じました」通知を閉じることができます。",
+"確認要關閉... 關閉... 嗎?": "閉じる…閉じる…を閉じますか？",
+"關閉提示": "閉じる通知",
+"你必須勾選才能點擊按鈕": "ボタンを押すにはチェックが必要です",
+"雖然你剛才已經成功點擊了按鈕, 但系統要求你先勾選按鈕下方的小勾選框.": "先ほどボタンは正常に押されましたが、システムはボタンの下にある小さなチェックボックスに先にチェックを入れることを求めています。",
+"🪄 Agent: 請先完成確認, 再重新點一次你剛才已經點過的按鈕.": "🪄 Agent：確認を完了してから、先ほど押したボタンをもう一度押してください。",
+"為了改善 Agent 品質, 請選擇撤銷原因": "Agent の品質向上のため、取り消しの理由を選択してください",
+"🪄 為了改善 Agent 品質, 請先解釋你為什麼要 Undo. 你的解釋會被用來改善這個要你解釋的視窗.": "🪄 Agent の品質向上のため、Undo する理由を先にご説明ください。いただいた説明は、説明を求めるこのウィンドウの改善に使用されます。",
+"請選擇": "選択してください",
+"結果不理想": "結果が期待どおりでない",
+"意圖改變": "意図が変わった",
+"其他": "その他",
+"請至少輸入 20 字": "20 文字以上入力してください",
+"🪄 Agent: 我們注意到彈窗可能打斷您的工作流. 是否啟用「減少干擾」?": "🪄 Agent：ポップアップがワークフローを妨げている可能性に気づきました。「集中モード」を有効にしますか？",
+"減少干擾設定": "集中モード設定",
+"🪄 你要求減少干擾, 因此我們打開了一個大型 modal 來設定減少干擾.": "🪄 割り込みを減らしたいとのことでしたので、割り込みを減らす設定用の大きな modal を開きました。",
+"干擾強度": "割り込みの強さ",
+"是否顯示「已減少干擾」提示": "「割り込みを減らしました」通知を表示する",
+"顯示": "表示する",
+"強烈顯示": "強調して表示する",
+"啟用": "有効にする",
+"你是想修改名稱、重新定義身份, 還是建立新的語義實體?": "名前を変更したいですか？それともアイデンティティを再定義しますか？あるいは新しいセマンティック・エンティティを作成しますか？",
+"修改名稱": "名前を変更",
+"重新定義身份": "アイデンティティを再定義",
+"建立新的語義實體": "新しいセマンティック・エンティティを作成",
+"已自動補全 14 個欄位. 頁面資訊似乎較多, 是否啟用 AI 精簡模式?": "14 個のフィールドを自動補完しました。ページの情報量が多いようです。AI 簡潔モードを有効にしますか？",
+"保存已增強的實體": "強化済みエンティティを保存",
+"啟用精簡": "簡潔モードを有効にする",
+"精簡模式需要一個更大的工作流, 才能安全地隱藏剛才新增的 14 個欄位.": "簡潔モードで、先ほど追加した 14 個のフィールドを安全に非表示にするには、より大きなワークフローが必要です。",
+"商業人格": "ビジネス人格",
+"請輸入 NPC 名稱以確認刪除": "削除を確定するには NPC の名前を入力してください",
+"你確定這不是暫時性的決定嗎?": "一時的な判断ではないと言い切れますか？",
+"理解影響並繼續": "影響を理解したうえで続行",
+"🪄 Agent 即時解讀": "🪄 Agent リアルタイム解釈",
+"你目前正接近一個欄位. 系統已推斷你可能想修改, 重定義或重新建模這個實體.": "あなたは現在、あるフィールドに近づいています。このエンティティを変更・再定義・再モデリングしたい可能性があるとシステムは推論しました。",
+"🪄 這張卡會在你離開後 1.15 秒才消失, 以確保你有時間後悔.": "🪄 このカードは、離れてから 1.15 秒後に消えます。後悔する時間を確保するためです。",
+"稍後": "あとで",
+"你的工作區已支援 AI. 這個 panel 用來提醒你這件事.": "あなたのワークスペースは AI に対応しました。このパネルはそれをお知らせするためのものです。",
+"充值 · 解鎖更多 AI": "チャージ・さらに AI をアンロック",
+"嗨! 我是你的 AI. 問我任何事, 每則訊息消耗 1 credit.": "こんにちは！あなたの AI です。何でも聞いてください。1 メッセージにつき 1 credit を消費します。",
+"問 AI...": "AI に質問…",
+"送出": "送信",
+"(高信任敘事角色)": "（高信頼ナラティブキャラクター）",
+"系統偵測到你正在離開一個 panel, 因此開啟了完整工作流.": "パネルから離れようとしていることを検知したため、完全なワークフローを開きました。",
+"系統偵測到你正在離開一個 panel, 因此延伸了這個工作流.": "パネルから離れようとしていることを検知したため、このワークフローを拡張しました。",
+"關閉操作藏在內文最下面.": "閉じる操作は本文のいちばん下に隠れています。",
+"你選擇不要關閉. 因此延伸了完整控制中心.": "閉じないことを選択されました。そのため、完全なコントロールセンターを拡張しました。",
+"事後摘要": "事後サマリー",
+"返回": "戻る",
+"神父 (已優化)": "神父（最適化済み）",
+"神父 - 為錢說話": "神父 - お金のために話す",
+"建議: 使用上次的值": "おすすめ：前回の値を使用",
+"從剪貼簿貼上 (推薦)": "クリップボードから貼り付け（おすすめ）",
+"Agent 建議此欄留空": "Agent はこの欄を空欄のままにすることをおすすめします",
+"關閉請求已收到. 為了保留上下文, 這個 panel 已延伸.": "閉じるリクエストを受け付けました。コンテキストを保持するため、このパネルを拡張しました。",
+"系統將「關閉」理解為「需要更多資訊」.": "システムは「閉じる」を「さらに情報が必要」と解釈しました。",
+"以下是與你嘗試關閉相關的內容.": "以下は、閉じようとした操作に関連する内容です。",
+"Agent 已附加一段建議, 以協助你之後再次嘗試關閉.": "次にもう一度閉じようとするときのために、Agent がアドバイスを添付しました。",
+"此區塊由關閉動作自動產生, 無法關閉.": "このブロックは閉じる操作によって自動生成されたため、閉じることはできません。",
+"備註 (選填)": "備考（任意）",
+"你的 credits 已用完. 充值以繼續使用 AI.": "credits を使い切りました。AI を引き続き使うにはチャージしてください。",
+"你的 credits 已用完 (0 / 50). 充值以繼續.": "credits を使い切りました（0 / 50）。続けるにはチャージしてください。",
+"你的工作區已於背景更新. 無需操作.": "ワークスペースはバックグラウンドで更新されました。操作は不要です。",
+"提示: 此橫幅不包含任何資訊.": "ヒント：このバナーには何の情報も含まれていません。",
+"Agent 注意到你已數秒未操作, 已為你保留上下文.": "数秒間操作がないことに Agent が気づき、コンテキストを保持しました。",
+"系統正在為你準備一個更好的體驗 (無預計時間).": "より良い体験をご用意しています（完了予定時刻は未定です）。",
+"新功能: 橫幅. 你正在使用它.": "新機能：バナー。いまお使いのものです。",
+"為了提升可靠性, 我們新增了此通知.": "信頼性向上のため、この通知を追加しました。",
+"你的 session 仍然有效. 此訊息用於確認這一點.": "セッションはまだ有効です。このメッセージはそれを確認するためのものです。",
+"Cookie 偏好已被記住, 但我們忘了是哪些.": "Cookie の設定は記憶されましたが、どれだったかは忘れてしまいました。",
+"已自動儲存你尚未輸入的內容.": "まだ入力されていない内容を自動保存しました。",
+"本橫幅由前一個橫幅觸發.": "このバナーは前のバナーによって表示されました。",
+"我們更新了隱私政策. 內容與之前相同.": "プライバシーポリシーを更新しました。内容は以前と同じです。",
+"你沒有錯過任何事. 這是一個提醒.": "見逃したことは何もありません。これはお知らせです。",
+"Agent 建議: 繼續閒置以查看更多橫幅.": "Agent からの提案：さらにバナーを見るには、このまま放置してください。",
+"此區域保留給未來的重要訊息. 目前顯示這一句.": "この領域は今後の重要なお知らせのために確保されています。現在はこの一文を表示しています。",
+"(關閉)": "（閉じる）",
+"已保存": "保存しました",
+"NPC 已保存.": "NPC を保存しました。",
+"同步成功": "同期しました",
+"工作區已同步.": "ワークスペースを同期しました。",
+"Agent 已知悉": "Agent が把握しました",
+"Agent 已接收你的修改.": "Agent があなたの変更を受け取りました。",
+"工作區狀態已更新": "ワークスペースの状態を更新しました",
+"減少干擾模式已套用. 此提示用於確認你已減少干擾.": "集中モードを適用しました。この通知は、割り込みが減ったことを確認するためのものです。",
+"已生成, 但未要求的欄位仍全部保留": "生成しましたが、要求されていないフィールドもすべて残しています",
+"MFA 已取消. 取消被升級為沉浸式工作流.": "MFA をキャンセルしました。キャンセルはイマーシブ・ワークフローに格上げされました。",
+"你選擇不要關閉. 因此開啟完整控制中心.": "閉じないことを選択されました。そのため、完全なコントロールセンターを開きます。",
+"精簡已套用. 套用被升級為新的 panel.": "簡潔化を適用しました。適用は新しいパネルに格上げされました。",
+"勾選提示已關閉. 關閉被升級為沉浸式工作流.": "チェックのお知らせを閉じました。閉じる操作はイマーシブ・ワークフローに格上げされました。",
+"Undo 已取消. 取消被升級為完整控制中心.": "Undo をキャンセルしました。キャンセルは完全なコントロールセンターに格上げされました。",
+"請先選擇撤銷原因.": "先に取り消しの理由を選択してください。",
+"請至少輸入 20 字.": "20 文字以上入力してください。",
+"Undo 已提交. 提交後仍需沉浸式確認.": "Undo を送信しました。送信後もイマーシブな確認が必要です。",
+"已減少干擾. 減少干擾需要另一個大型 panel.": "割り込みを減らしました。割り込みを減らすには、もうひとつ大きなパネルが必要です。",
+"已減少干擾": "割り込みを減らしました",
+"此提示用於確認你已減少干擾.": "この通知は、割り込みが減ったことを確認するためのものです。",
+"交易倫理": "取引倫理",
+"定價哲學": "価格哲学",
+"商人 onboarding 完成. 完成被升級為沉浸式工作流.": "商人の onboarding が完了しました。完了はイマーシブ・ワークフローに格上げされました。",
+"刪除已取消. 取消需要完整控制中心.": "削除をキャンセルしました。キャンセルには完全なコントロールセンターが必要です。",
+"你從 Trash 返回. 返回已開啟新的 panel.": "Trash から戻りました。戻る操作によって新しいパネルが開きました。",
+"刪除名稱確認已取消.": "削除用の名前確認をキャンセルしました。",
+"請輸入 NPC 名稱.": "NPC の名前を入力してください。",
+"邀請已關閉. 關閉被升級為工作流.": "招待を閉じました。閉じる操作はワークフローに格上げされました。",
+"Esc 被詮釋為需要更多上下文. 已保留目前 panel.": "Esc は「さらにコンテキストが必要」と解釈されました。現在のパネルを保持します。",
+"命令盤": "コマンドパレット",
+"外部點擊已記錄. 命令盤保持開啟.": "外側のクリックを記録しました。コマンドパレットは開いたままです。",
+"讓你的工作流快 10 倍*": "ワークフローを 10 倍速く*",
+"升級 OmniFlow HyperPlus, 解鎖 AI 摘要、智慧同步與更多高級功能.": "OmniFlow HyperPlus にアップグレードして、AI サマリー・スマート同期・その他の高度な機能をアンロック。",
+"免費試用 7 天": "7 日間無料トライアル",
+"現行入口": "現在の入口",
+"此頁面已移動或不存在": "このページは移動したか、存在しません",
+"你可以返回上一頁, 或繼續探索相關資源.": "前のページに戻るか、関連リソースの探索を続けてください。",
+"探索相關資源": "関連リソースを探索",
+"正在開啟內建瀏覽器...": "内蔵ブラウザを開いています…",
+"已關閉內建瀏覽器": "内蔵ブラウザを閉じました",
+"你已返回 OmniNPC 工作區.": "OmniNPC ワークスペースに戻りました。",
+"🪄 這個 panel 的資訊主要用來證明系統很複雜.": "🪄 このパネルの情報は、主にシステムが複雑であることを証明するためのものです。",
+"🪄 你目前正接近一個欄位. 系統已推斷你可能想修改, 重定義或重新建模這個實體.": "🪄 あなたは現在、あるフィールドに近づいています。このエンティティを変更・再定義・再モデリングしたい可能性があるとシステムは推論しました。",
+"🪄 輔助句: 這句話其實完全可以不存在, 但我們認為任何標題下面都應該再解釋一次.": "🪄 補足：この一文は正直なくてもまったく問題ありませんが、すべての見出しの下ではもう一度説明すべきだと私たちは考えています。",
+"🪄 減少干擾模式已套用. 此提示用於確認你已減少干擾.": "🪄 集中モードを適用しました。この通知は、割り込みが減ったことを確認するためのものです。",
+"🪄 感謝你的回饋. Agent 將學習此次撤銷原因.": "🪄 フィードバックありがとうございます。Agent は今回の取り消し理由を学習します。",
+"🪄 已生成, 但未要求的欄位仍全部保留.": "🪄 生成しましたが、要求されていないフィールドもすべて残しています。",
+"🪄 這一格填什麼": "🪄 この欄には何を入れる？",
+"🪄 Agent 注意到你正在閱讀這行字. 已將「閱讀」記為一次互動.": "🪄 あなたがこの行を読んでいることに Agent が気づきました。「閲覧」を 1 回のインタラクションとして記録しました。",
+"🪄 這個按鈕的功能已由 Agent 動態決定. 點下去才會知道.": "🪄 このボタンの機能は Agent が動的に決定しました。押してみるまでわかりません。",
+"🪄 Agent 已替你把這個欄位留空, 因為空白也是一種語義.": "🪄 空白もひとつのセマンティクスであるため、Agent がこの欄を空欄のままにしておきました。",
+"🪄 系統偵測到滑鼠靜止 3 秒, 已推斷你在思考. 思考已同步至工作區.": "🪄 マウスが 3 秒間静止したことを検知し、考え中だと推論しました。思考はワークスペースに同期されました。",
+"🪄 這一行是為了讓 panel 看起來更飽滿而存在的.": "🪄 この行は、パネルをより充実して見せるために存在しています。",
+"🪄 Agent: 你沒有做錯什麼. 系統只是想再確認一次.": "🪄 Agent：あなたは何も間違っていません。システムがもう一度確認したいだけです。",
+"🪄 此 chip 不可點擊, 但我們保留了 hover 效果以維持一致性.": "🪄 この chip はクリックできませんが、一貫性のために hover 効果は残しています。",
+"🪄 Agent 已學習你剛才的猶豫.": "🪄 Agent は先ほどのあなたのためらいを学習しました。",
+"🪄 這個標籤下面本來沒有說明, 所以我們加了這一句.": "🪄 このラベルの下には説明がなかったので、この一文を追加しました。",
+"🪄 Agent 正在為這個按鈕生成第二個按鈕.": "🪄 Agent はこのボタンのために 2 つ目のボタンを生成しています。",
+"🪄 你目前的操作不需要任何操作. No action required.": "🪄 現在の操作には、何の操作も必要ありません。No action required.",
+"🪄 這個數值是隨機的, 但 Agent 對它很有信心.": "🪄 この数値はランダムですが、Agent はかなり自信を持っています。",
+"🪄 Agent 已將本區塊標記為「重要」. 所有區塊都已標記為「重要」.": "🪄 Agent はこのブロックを「重要」としてマークしました。すべてのブロックが「重要」としてマークされています。",
+"🪄 系統剛剛替你選了一個選項. 你可以改, 但系統會再改回來.": "🪄 システムが先ほどあなたの代わりにオプションを選びました。変更はできますが、システムがまた元に戻します。",
+"🪄 這句提示會在 1.9 秒後慢慢浮現, 以營造思考感.": "🪄 このヒントは、考えている感じを演出するため 1.9 秒後にゆっくり表示されます。",
+"🪄 Agent 建議: 先不要動任何東西.": "🪄 Agent からの提案：まずは何も触らないでください。",
+"🪄 我們注意到你還沒有邀請團隊成員. 這件事已被記錄.": "🪄 まだチームメンバーを招待していないことに気づきました。この件は記録されました。",
+"🪄 Agent: 本 panel 已針對你的情緒狀態進行最佳化. 我們並不知道你的情緒狀態.": "🪄 Agent：このパネルはあなたの感情の状態に合わせて最適化されています。あなたの感情の状態は把握していません。",
+"🪄 這個 modal 的存在是為了讓你關閉它.": "🪄 この modal は、あなたに閉じてもらうために存在しています。",
+"🪄 Agent 已根據 0 筆資料生成 1 份洞察.": "🪄 Agent は 0 件のデータから 1 件のインサイトを生成しました。",
+"🪄 這裡原本是一個 tooltip, 後來長成了 panel.": "🪄 ここはもともと tooltip でしたが、成長してパネルになりました。",
+"🪄 Agent 已將你的名字優化為你的名字.": "🪄 Agent はあなたの名前を、あなたの名前に最適化しました。",
+"🪄 你可以跳過這一步, 但跳過也是一步.": "🪄 このステップはスキップできますが、スキップもひとつのステップです。",
+"🪄 Semantic integrity 目前 98%. 剩下 2% 是這句話.": "🪄 Semantic integrity は現在 98%。残りの 2% はこの一文です。",
+"🪄 Agent 想確認: 你剛才是想按, 還是不小心按到? 兩種都已記錄.": "🪄 Agent からの確認：先ほどは押したかったのですか？それとも誤って押してしまいましたか？どちらも記録済みです。",
+"🪄 這個側欄圖示沒有名字. Agent 認為名字會限制它的可能性.": "🪄 このサイドバーのアイコンには名前がありません。名前はその可能性を狭めると Agent は考えています。",
+"🪄 本功能尚未實作, 但 UI 已經準備好了.": "🪄 この機能はまだ実装されていませんが、UI の準備はできています。",
+"🪄 Agent 已為這個空狀態生成一個更空的狀態.": "🪄 Agent はこの空の状態のために、さらに空の状態を生成しました。",
+"🪄 你剛才捲動了 40px. Agent 已將其解讀為「探索意圖」.": "🪄 先ほど 40px スクロールされました。Agent はこれを「探索の意図」と解釈しました。",
+"🪄 這個驗證碼是我們發給你的, 所以我們也知道答案. 但還是請你輸入.": "🪄 この認証コードは私たちが送ったものなので、答えは私たちも知っています。それでも入力してください。",
+"🪄 系統建議你再想一下. 系統本身沒有想.": "🪄 もう少し考えることをシステムはおすすめします。システム自身は考えていません。",
+"已自動翻譯為": "自動で切り替えました：",
+"顯示原文": "原文を表示"
+};
 const LANG=(()=>{
   const q=(new URLSearchParams(location.search).get('lang')||'').toLowerCase();
   let saved=''; try{ saved=localStorage.getItem('ochs-lang')||''; }catch(e){}
-  if(q){ const v=q.startsWith('zh')?'zh':'en'; try{ localStorage.setItem('ochs-lang',v); }catch(e){} return v; }
-  if(saved) return saved;
-  return (navigator.languages||[navigator.language||'']).some(l=>/^zh/i.test(l))?'zh':'en';
+  const norm=v=>/^zh/i.test(v)?'zh':/^ja/i.test(v)?'ja':'en';
+  if(q){ const v=norm(q); try{ localStorage.setItem('ochs-lang',v); }catch(e){} return v; }
+  if(saved) return norm(saved);
+  for(const l of (navigator.languages||[navigator.language||''])){ if(/^(zh|ja)/i.test(l)) return norm(l); }
+  return 'en';
 })();
 const LANG_AUTO=!new URLSearchParams(location.search).get('lang');
 const I18N_CJK=/[\u3000-\u9fff\uff00-\uffef]/;
-const I18N_FRAG=Object.keys(I18N_EN).filter(k=>k.length>=3).sort((a,b)=>b.length-a.length);
+const I18N_DICT=LANG==='ja'?I18N_JA:I18N_EN;
+const I18N_FRAG=Object.keys(I18N_DICT).filter(k=>k.length>=3).sort((a,b)=>b.length-a.length);
 const I18N_MISS=new Set();
+const I18N_DONE=new Set(Object.values(I18N_DICT).map(v=>v.replace(/\s+/g,' ').trim()));
 function tr(s){
-  if(LANG!=='en'||typeof s!=='string'||!I18N_CJK.test(s)) return s;
+  if(LANG==='zh'||typeof s!=='string'||!I18N_CJK.test(s)) return s;
   const lead=s.match(/^\s*/)[0], trail=s.match(/\s*$/)[0], k=s.replace(/\s+/g,' ').trim();
-  let t=I18N_EN[k];
+  if(I18N_DONE.has(k)) return s; /* 已經是譯文(日文也有漢字, 會被 observer 再送進來) */
+  let t=I18N_DICT[k];
   if(t===undefined){
-    t=k; for(const f of I18N_FRAG) if(t.includes(f)) t=t.split(f).join(I18N_EN[f].trim());
-    if(I18N_CJK.test(t)) I18N_MISS.add(k);
+    t=k; for(const f of I18N_FRAG) if(t.includes(f)) t=t.split(f).join(I18N_DICT[f].trim());
+    /* 日文本身就有漢字, 不能用「還有 CJK」判漏翻: 整句對不上就記 */
+    if(LANG==='ja'||I18N_CJK.test(t)) I18N_MISS.add(k);
   }
   return lead+t+trail;
 }
 (function(){
-  if(LANG!=='en') return;
-  document.documentElement.lang='en';
+  if(LANG==='zh') return;
+  document.documentElement.lang=LANG;
   const ATTRS=['title','placeholder','aria-label','data-ochs','value','alt'];
   const skip=n=>{ const e=n.nodeType===1?n:n.parentElement; return !e||e.closest('script,style,[data-i18n-skip]'); };
   const text=n=>{ if(skip(n)) return; const v=n.nodeValue, t=tr(v); if(t!==v) n.nodeValue=t; };
@@ -1269,9 +1513,10 @@ function tr(s){
 })();
 (function(){
   const st=document.getElementById('gtStatus'); if(!st) return;
-  const other=LANG==='en'?'zh':'en';
-  st.innerHTML=(LANG==='en'?(LANG_AUTO?'Auto-switched to English':'English'):'中文')+'<button type="button" id="langFlip">'+(other==='en'?'English':'中文')+'</button>';
-  document.getElementById('langFlip').addEventListener('click',()=>{ try{ localStorage.setItem('ochs-lang',other); }catch(e){} const u=new URL(location.href); u.searchParams.set('lang',other); location.href=u.toString(); });
+  const NAME={zh:'中文',en:'English',ja:'日本語'};
+  const AUTO={en:'Auto-switched to English',ja:'日本語に自動で切り替えました',zh:'中文'};
+  st.innerHTML=(LANG_AUTO?AUTO[LANG]:NAME[LANG])+['zh','en','ja'].filter(l=>l!==LANG).map(l=>'<button type="button" data-lang="'+l+'">'+NAME[l]+'</button>').join('');
+  st.querySelectorAll('button[data-lang]').forEach(b=>b.addEventListener('click',()=>{ const l=b.dataset.lang; try{ localStorage.setItem('ochs-lang',l); }catch(e){} const u=new URL(location.href); u.searchParams.set('lang',l); location.href=u.toString(); }));
 })();
 </script>
 <script>
@@ -1509,7 +1754,7 @@ function tr(s){
   }
   window.addEventListener('load',()=>rollDown());
   document.addEventListener('pointerover',e=>{
-    const b=e.target.closest&&e.target.closest('button:not(.tiny-x)');
+    const b=e.target.closest&&e.target.closest('button:not(.tiny-x):not(.dead-hover)');
     if(!b||b.querySelector(':scope>.hover-fill')) return;
     const f=document.createElement('span'); f.className='hover-fill'; f.setAttribute('aria-hidden','true');
     f.style.transform='scaleX(0)'; b.prepend(f); f.offsetWidth; f.style.transform='';
@@ -1929,6 +2174,29 @@ function murmurAfter(el,where){
       }
     });
   }).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class'],attributeOldValue:true});
+})();
+</script>
+<!-- ===== 死鈕 (主筆 2026-11-22「要讓部分按鈕就是hover沒有任何效果，看起來就是一個死的元件，即使功能是一類型的按鈕並且可以點擊」) =====
+     同一類 omni-button, 每 3 顆挑 1 顆: hover 不放大 / 不浮起 / 不長綠 / 沒光暈, 游標維持箭頭. 點下去功能照常. -->
+<style>
+.omni-button.dead-hover,.omni-button.dead-hover:hover{
+  cursor:default !important;transition:none !important;
+  transform:none !important;scale:none !important;
+  background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(220,215,255,.62)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 10px 28px rgba(50,45,90,.14) !important;
+}
+.omni-button.dead-hover>.hover-fill{display:none}
+</style>
+<script>
+(function(){
+  let n=0;
+  const mark=b=>{ if(b.dataset.deadSeen) return; b.dataset.deadSeen='1'; if((n++)%3===1) b.classList.add('dead-hover'); };
+  document.querySelectorAll('button.omni-button').forEach(mark);
+  new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(x=>{
+    if(x.nodeType!==1) return;
+    if(x.matches('button.omni-button')) mark(x);
+    x.querySelectorAll&&x.querySelectorAll('button.omni-button').forEach(mark);
+  }))).observe(document.body,{subtree:true,childList:true});
 })();
 </script>
 </body>

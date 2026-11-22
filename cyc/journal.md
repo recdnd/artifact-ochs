@@ -18,6 +18,19 @@ Split: no
 
 ## 紀錄 (倒序, 最新在上)
 
+### 2026-11-22 -- 自動日語 + 死鈕
+
+**Why**
+主筆:「做多語言適配再加個自動日語」;「目前所有按鈕都會hover動畫效果太友好了，要讓部分按鈕就是hover沒有任何效果，看起來就是一個死的元件，即使功能是一類型的按鈕並且可以點擊」. 死鈕靈感來源: 真實網站裡用 div + onclick 做的按鈕, 同一排有的有 hover 有的沒有.
+
+**What**
+1. `I18N_JA` 231 條手翻 (同 `I18N_EN` 的 key). 偵測: 瀏覽器語言清單裡先出現的 zh / ja 決定, 都沒有就英文; `?lang=ja` 強制. 🌐 那顆改成「目前語言 + 另外兩個」. head 補 hreflang (x-default / zh-Hant / en / ja).
+2. 日文本身有漢字, 不能用「還有 CJK」判漏翻: 改成整句對不上才記 `I18N_MISS`, 已是譯文的直接放行.
+3. 死鈕: `omni-button` 每 3 顆挑 1 顆 (含之後長出來的) 加 `.dead-hover`: hover 不放大 / 不浮起 / 不長綠 / 沒光暈, 游標維持箭頭, 點擊照常.
+
+**Result**
+ja-JP / en-US / zh-TW / `?lang=ja` 四種跑過 15s 閒置 + 點按鈕: `I18N_MISS` 全空, 0 JS 錯誤. 死鈕 17 / 51, hover 量到 scale none / cursor default, 點下去照常開東西. 新增中文字串: 無. 未 push.
+
 ### 2026-11-22 -- v5 眩暈: 每個 panel 加 Liquid Glass 式動畫
 
 **Why**
